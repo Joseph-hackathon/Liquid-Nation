@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let numStr = text.replace(/[^0-9.]/g, '');
         let num = parseFloat(numStr);
         
-        if (isNaN(num)) return;
+        if (isNaN(num) || num === 0) return;
 
         let multiplier = 1;
         if (hasK) multiplier = 1000;
@@ -101,11 +101,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Add parallax effect to hero
+    let ticking = false;
     window.addEventListener('scroll', function() {
-        const scrolled = window.pageYOffset;
-        const hero = document.querySelector('.hero');
-        if (hero) {
-            hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+        if (!ticking) {
+            window.requestAnimationFrame(function() {
+                const scrolled = window.scrollY;
+                const hero = document.querySelector('.hero');
+                if (hero) {
+                    hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+                }
+                ticking = false;
+            });
+            ticking = true;
         }
     });
 
@@ -210,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let lastScroll = 0;
     window.addEventListener('scroll', () => {
         const navbar = document.querySelector('.navbar');
-        const currentScroll = window.pageYOffset;
+        const currentScroll = window.scrollY;
         
         if (currentScroll > 100) {
             navbar.style.background = 'rgba(15, 15, 30, 0.98)';
