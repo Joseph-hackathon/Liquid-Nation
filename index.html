@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Liquidnation - Decentralized Liquidity Protocol">
+    <title>Liquidnation - Decentralized Liquidity Protocol</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="20" cy="20" r="18" stroke="url(#gradient)" stroke-width="2"/>
+                    <path d="M15 15L25 20L15 25V15Z" fill="url(#gradient)"/>
+                    <defs>
+                        <linearGradient id="gradient" x1="0" y1="0" x2="40" y2="40">
+                            <stop offset="0%" stop-color="#667eea"/>
+                            <stop offset="100%" stop-color="#764ba2"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="logo-text">Liquidnation</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="#stats">Stats</a>
+                <a href="#docs">Docs</a>
+                <button class="btn-primary">Launch App</button>
+            </div>
+            <div class="mobile-menu-toggle" id="mobileMenuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Unlock Liquidity with <span class="gradient-text">Liquidnation</span></h1>
+                <p class="hero-description">
+                    The premier decentralized protocol for collateralized lending and borrowing. 
+                    Access instant liquidity without selling your assets.
+                </p>
+                <div class="hero-buttons">
+                    <button class="btn-primary btn-large">Get Started</button>
+                    <button class="btn-secondary btn-large">Learn More</button>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">$2.5B+</div>
+                        <div class="stat-label">Total Value Locked</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">50K+</div>
+                        <div class="stat-label">Active Users</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">125K+</div>
+                        <div class="stat-label">Loans Originated</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">Why Choose Liquidnation?</h2>
+            <p class="section-subtitle">Built for the decentralized future of finance</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <circle cx="24" cy="24" r="20" stroke="#667eea" stroke-width="2"/>
+                            <path d="M24 12V24L32 28" stroke="#667eea" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <h3>Instant Loans</h3>
+                    <p>Access liquidity in seconds with our streamlined lending protocol</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <rect x="12" y="12" width="24" height="24" rx="4" stroke="#667eea" stroke-width="2"/>
+                            <path d="M24 20V28M20 24H28" stroke="#667eea" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <h3>Flexible Collateral</h3>
+                    <p>Support for multiple asset types including NFTs and tokens</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <path d="M24 12L32 20L24 28L16 20L24 12Z" stroke="#667eea" stroke-width="2" stroke-linejoin="round"/>
+                            <path d="M24 28L32 36L24 44L16 36L24 28Z" stroke="#667eea" stroke-width="2" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3>Decentralized</h3>
+                    <p>Non-custodial protocol with full user control over assets</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <circle cx="18" cy="24" r="6" stroke="#667eea" stroke-width="2"/>
+                            <circle cx="30" cy="24" r="6" stroke="#667eea" stroke-width="2"/>
+                            <path d="M24 18V30" stroke="#667eea" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <h3>Fair Rates</h3>
+                    <p>Competitive interest rates driven by market dynamics</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <path d="M24 12L12 24L24 36L36 24L24 12Z" stroke="#667eea" stroke-width="2"/>
+                            <path d="M24 20L20 24L24 28L28 24L24 20Z" stroke="#667eea" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <h3>Secure Smart Contracts</h3>
+                    <p>Audited by leading security firms for maximum protection</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <rect x="12" y="16" width="24" height="20" rx="2" stroke="#667eea" stroke-width="2"/>
+                            <path d="M16 16V12C16 8 20 8 24 8C28 8 32 8 32 12V16" stroke="#667eea" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <h3>Protected Deposits</h3>
+                    <p>Insurance fund to protect lenders and borrowers</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">Simple steps to unlock your liquidity</p>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Connect Wallet</h3>
+                    <p>Connect your Web3 wallet to get started</p>
+                </div>
+                <div class="step-arrow">→</div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Deposit Collateral</h3>
+                    <p>Lock your assets as collateral for a loan</p>
+                </div>
+                <div class="step-arrow">→</div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Borrow</h3>
+                    <p>Receive funds instantly to your wallet</p>
+                </div>
+                <div class="step-arrow">→</div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Repay & Unlock</h3>
+                    <p>Repay the loan and retrieve your collateral</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section id="stats" class="stats-section">
+        <div class="container">
+            <h2 class="section-title">Protocol Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-card-value">$2.5B+</div>
+                    <div class="stat-card-label">Total Value Locked</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-value">50,000+</div>
+                    <div class="stat-card-label">Active Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-value">125,000+</div>
+                    <div class="stat-card-label">Total Loans</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-value">98.5%</div>
+                    <div class="stat-card-label">Loan Repayment Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-value">4.5%</div>
+                    <div class="stat-card-label">Avg. Interest Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-value">15+</div>
+                    <div class="stat-card-label">Supported Chains</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to unlock your liquidity?</h2>
+                <p>Join thousands of users already using Liquidnation</p>
+                <button class="btn-primary btn-large">Launch App Now</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="20" cy="20" r="18" stroke="url(#gradient2)" stroke-width="2"/>
+                            <path d="M15 15L25 20L15 25V15Z" fill="url(#gradient2)"/>
+                            <defs>
+                                <linearGradient id="gradient2" x1="0" y1="0" x2="40" y2="40">
+                                    <stop offset="0%" stop-color="#667eea"/>
+                                    <stop offset="100%" stop-color="#764ba2"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <span>Liquidnation</span>
+                    </div>
+                    <p class="footer-description">
+                        The premier decentralized protocol for collateralized lending and borrowing.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#stats">Statistics</a></li>
+                        <li><a href="#security">Security</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#docs">Documentation</a></li>
+                        <li><a href="#api">API</a></li>
+                        <li><a href="#github">GitHub</a></li>
+                        <li><a href="#blog">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Community</h4>
+                    <ul>
+                        <li><a href="#twitter">Twitter</a></li>
+                        <li><a href="#discord">Discord</a></li>
+                        <li><a href="#telegram">Telegram</a></li>
+                        <li><a href="#forum">Forum</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Liquidnation. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#privacy">Privacy Policy</a>
+                    <a href="#terms">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
