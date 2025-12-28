@@ -165,14 +165,6 @@ body {
   transform: rotate(20deg);
 }
 
-.top-bar-theme-toggle {
-  /* Specific styles for top bar theme toggle if needed */
-}
-
-.nav-theme-toggle {
-  /* Specific styles for nav theme toggle if needed */
-}
-
 .settings-theme-toggle-container {
   display: flex;
   align-items: center;
@@ -183,10 +175,6 @@ body {
 .theme-status {
   font-weight: 600;
   color: var(--text-strong);
-}
-
-.settings-theme-toggle {
-  /* Specific styles for settings theme toggle if needed */
 }
 
 .main-stage {
