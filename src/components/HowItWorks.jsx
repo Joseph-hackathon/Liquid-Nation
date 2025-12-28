@@ -6,7 +6,7 @@ const HowItWorks = () => {
     <section id="how-it-works" className="how-it-works">
       <div className="container">
         <h2 className="section-title">How It Works</h2>
-        <p className="section-subtitle">Simple steps to unlock your liquidity</p>
+        <p className="section-subtitle">Simple steps to trade across chains</p>
         <div className="steps">
           {steps.map((step, index) => (
             <React.Fragment key={index}>
