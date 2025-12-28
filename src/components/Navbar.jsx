@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const Navbar = () => {
+const Navbar = ({ onLaunchApp }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
@@ -32,7 +32,7 @@ const Navbar = () => {
           <a href="#how-it-works" onClick={handleLinkClick}>How It Works</a>
           <a href="#stats" onClick={handleLinkClick}>Stats</a>
           <a href="#docs" onClick={handleLinkClick}>Docs</a>
-          <button className="btn-primary">Launch App</button>
+          <button className="btn-primary" onClick={onLaunchApp}>Launch App</button>
         </div>
         <div 
           className={`mobile-menu-toggle ${mobileMenuOpen ? 'active' : ''}`}

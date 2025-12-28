@@ -1,4 +1,16 @@
-const Hero = () => {
+const Hero = ({ onLaunchApp }) => {
+  const handleLearnMore = (e) => {
+    e.preventDefault();
+    const featuresSection = document.querySelector('#features');
+    if (featuresSection) {
+      const offsetTop = featuresSection.offsetTop - 80;
+      window.scrollTo({
+        top: offsetTop,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   return (
     <section className="hero">
       <div className="container">
@@ -11,8 +23,8 @@ const Hero = () => {
             Access instant liquidity without selling your assets.
           </p>
           <div className="hero-buttons">
-            <button className="btn-primary btn-large">Get Started</button>
-            <button className="btn-secondary btn-large">Learn More</button>
+            <button className="btn-primary btn-large" onClick={onLaunchApp}>Get Started</button>
+            <button className="btn-secondary btn-large" onClick={handleLearnMore}>Learn More</button>
           </div>
           <div className="hero-stats">
             <div className="stat-item">

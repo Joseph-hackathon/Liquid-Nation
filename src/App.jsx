@@ -1,3 +1,12 @@
+import { useState } from 'react';
+import Navbar from './components/Navbar';
+import Hero from './components/Hero';
+import Features from './components/Features';
+import HowItWorks from './components/HowItWorks';
+import Stats from './components/Stats';
+import CTA from './components/CTA';
+import Footer from './components/Footer';
+
 const offers = [
   {
     name: 'NiftyBruh.eth',
@@ -163,12 +172,12 @@ function StatusCell({ percent }) {
   );
 }
 
-function App() {
+function MainApp() {
   return (
     <div className="app-shell">
       <header className="top-bar">
         <div className="logo-mark" aria-label="Liquid Nation logo">
-          <img src="/logo.svg" alt="Liquid Nation" />
+          <img src="/logo.svg" alt="Liquid Nation" className="logo-image" />
         </div>
         <div className="wallet-pill">0x123...</div>
       </header>
@@ -247,6 +256,34 @@ function App() {
       </nav>
     </div>
   );
+}
+
+function LandingPage({ onLaunchApp }) {
+  return (
+    <div className="landing-page">
+      <Navbar onLaunchApp={onLaunchApp} />
+      <Hero onLaunchApp={onLaunchApp} />
+      <Features />
+      <HowItWorks />
+      <Stats />
+      <CTA onLaunchApp={onLaunchApp} />
+      <Footer />
+    </div>
+  );
+}
+
+function App() {
+  const [showApp, setShowApp] = useState(false);
+
+  const handleLaunchApp = () => {
+    setShowApp(true);
+  };
+
+  if (showApp) {
+    return <MainApp />;
+  }
+
+  return <LandingPage onLaunchApp={handleLaunchApp} />;
 }
 
 export default App;
