@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Features from './components/Features';
@@ -173,6 +173,25 @@ function StatusCell({ percent }) {
 }
 
 function MainApp({ onBackToLanding }) {
+  const [showCreateMenu, setShowCreateMenu] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowCreateMenu(false);
+      }
+    };
+
+    if (showCreateMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showCreateMenu]);
+
   return (
     <div className="app-shell">
       <header className="top-bar">
@@ -191,6 +210,24 @@ function MainApp({ onBackToLanding }) {
         <section className="offers-panel" aria-label="Open offers">
           <div className="panel-header">
             <h1>Open Offers</h1>
+            <div className="create-order-wrapper" ref={menuRef}>
+              <button 
+                type="button" 
+                className="btn-create-order"
+                onClick={() => setShowCreateMenu(!showCreateMenu)}
+                aria-expanded={showCreateMenu}
+                aria-label="Create order menu"
+              >
+                Create Order
+              </button>
+              {showCreateMenu && (
+                <div className="create-order-menu">
+                  <button type="button" className="menu-item" onClick={() => setShowCreateMenu(false)}>Create Buy Order</button>
+                  <button type="button" className="menu-item" onClick={() => setShowCreateMenu(false)}>Create Sell Order</button>
+                  <button type="button" className="menu-item" onClick={() => setShowCreateMenu(false)}>Create Swap Order</button>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="table">
@@ -202,7 +239,6 @@ function MainApp({ onBackToLanding }) {
               <div className="table-cell">Partial</div>
               <div className="table-cell">Status</div>
               <div className="table-cell">Premium</div>
-              <div className="table-cell">Order ID</div>
             </div>
 
             {offers.map((offer) => (
@@ -225,7 +261,6 @@ function MainApp({ onBackToLanding }) {
                   <StatusCell percent={offer.status} />
                 </div>
                 <div className="table-cell text-strong">{offer.premium}</div>
-                <div className="table-cell order-id">{offer.orderId}</div>
               </div>
             ))}
           </div>

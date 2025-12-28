@@ -116,6 +116,9 @@ body {
 .panel-header {
   padding: 18px 20px 12px;
   border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .panel-header h1 {
@@ -124,13 +127,83 @@ body {
   color: var(--text-strong);
 }
 
+.create-order-wrapper {
+  position: relative;
+}
+
+.btn-create-order {
+  background: linear-gradient(135deg, #1dd3d7, #0b6c8e);
+  color: #fdfaf4;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(29, 211, 215, 0.3);
+}
+
+.btn-create-order:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(29, 211, 215, 0.4);
+}
+
+.create-order-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(7, 83, 114, 0.2);
+  min-width: 200px;
+  overflow: hidden;
+  z-index: 100;
+  animation: menuSlideIn 0.2s ease-out;
+}
+
+@keyframes menuSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.menu-item {
+  width: 100%;
+  padding: 14px 18px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-strong);
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 1px solid var(--border);
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-item:hover {
+  background: #e4f6ff;
+  color: #0b6c8e;
+}
+
 .table {
   display: grid;
 }
 
 .table-row {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr 1.4fr 0.8fr 1fr 1fr 0.8fr;
+  grid-template-columns: 1.4fr 1fr 1fr 1.4fr 0.8fr 1fr 1fr;
   align-items: center;
   padding: 12px 18px;
   gap: 12px;
@@ -297,7 +370,7 @@ body {
 
 @media (max-width: 1024px) {
   .table-row {
-    grid-template-columns: 1.2fr 1fr 1fr 1fr 0.8fr 1fr 1fr 0.8fr;
+    grid-template-columns: 1.2fr 1fr 1fr 1fr 0.8fr 1fr 1fr;
   }
 
   .bottom-nav {
