@@ -38,21 +38,57 @@ function Offers({ chainThemes, onNavigate }) {
   const [showCreateMenu, setShowCreateMenu] = useState(false);
   const menuRef = useRef(null);
 
+  // Pagination state
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setShowCreateMenu(false);
       }
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
     };
 
-    if (showCreateMenu) {
+    if (showCreateMenu || showDropdown) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showCreateMenu]);
+  }, [showCreateMenu, showDropdown]);
+
+  // Calculate pagination values
+  const totalOrders = orders.length;
+  const totalPages = Math.ceil(totalOrders / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, totalOrders);
+  const paginatedOrders = orders.slice(startIndex, endIndex);
+
+  // Handle items per page change
+  const handleItemsPerPageChange = (value) => {
+    setItemsPerPage(value);
+    setCurrentPage(1); // Reset to first page
+    setShowDropdown(false);
+  };
+
+  // Handle page navigation
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
 
   const handleCreateOrderClick = () => {
     setShowCreateMenu(false);
@@ -101,7 +137,7 @@ function Offers({ chainThemes, onNavigate }) {
           <div className="table-cell">Actions</div>
         </div>
 
-        {orders.map((offer) => (
+        {paginatedOrders.map((offer) => (
           <div className="table-row" key={`${offer.name}-${offer.orderId}`}>
             <div className="table-cell profile-cell">
               <Avatar symbol={offer.avatar} color={offer.avatarColor} />
@@ -147,11 +183,50 @@ function Offers({ chainThemes, onNavigate }) {
 
         <div className="pagination">
           <div className="per-page">Orders Per Page:</div>
-          <div className="dropdown">10 ▼</div>
-          <div className="page-window">1-{Math.min(10, orders.length)} of {orders.length}</div>
+          <div className="dropdown" ref={dropdownRef}>
+            <button 
+              type="button" 
+              onClick={() => setShowDropdown(!showDropdown)}
+              aria-expanded={showDropdown}
+              aria-label="Items per page"
+            >
+              {itemsPerPage} ▼
+            </button>
+            {showDropdown && (
+              <div className="dropdown-menu">
+                {[10, 25, 50, 100].map((value) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => handleItemsPerPageChange(value)}
+                    className={itemsPerPage === value ? 'active' : ''}
+                  >
+                    {value}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="page-window">
+            {totalOrders === 0 ? '0-0 of 0' : `${startIndex + 1}-${endIndex} of ${totalOrders}`}
+          </div>
           <div className="pager-arrows">
-            <button type="button" aria-label="Previous page">‹</button>
-            <button type="button" aria-label="Next page">›</button>
+            <button 
+              type="button" 
+              aria-label="Previous page"
+              onClick={handlePreviousPage}
+              disabled={currentPage === 1}
+            >
+              ‹
+            </button>
+            <button 
+              type="button" 
+              aria-label="Next page"
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages || totalOrders === 0}
+            >
+              ›
+            </button>
           </div>
         </div>
       </div>
