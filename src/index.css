@@ -1206,6 +1206,25 @@ body {
   box-shadow: 0 6px 20px rgba(29, 211, 215, 0.4);
 }
 
+.btn-cancel-order {
+  background: transparent;
+  color: #e74c3c;
+  border: 2px solid #e74c3c;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cancel-order:hover {
+  background: #e74c3c;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+}
+
 .btn-secondary-small {
   background: transparent;
   color: var(--text-strong);

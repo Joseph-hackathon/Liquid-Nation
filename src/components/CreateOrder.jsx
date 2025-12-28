@@ -45,9 +45,9 @@ function CreateOrder({ chainThemes, onNavigate }) {
     setPartialFills(true);
     setPremium('');
     
-    // Navigate back to offers page if onNavigate is provided
+    // Navigate back to dashboard to see the newly created order
     if (onNavigate) {
-      onNavigate('offers');
+      onNavigate('dashboard');
     }
   };
 
