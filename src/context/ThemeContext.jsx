@@ -17,8 +17,8 @@ export const ThemeProvider = ({ children }) => {
     if (savedTheme) {
       return savedTheme === 'dark';
     }
-    // Fall back to system preference if no saved theme
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    // Default to dark mode if no saved theme
+    return true;
   });
 
   useEffect(() => {
