@@ -1,10 +1,10 @@
-# Liquidnation
+# Liquid Nation
 
 A decentralized liquidity protocol for collateralized lending and borrowing.
 
 ## Overview
 
-Liquidnation is a modern DeFi protocol built with React that enables users to unlock liquidity from their digital assets without selling them. Built on blockchain technology, it provides a secure, transparent, and efficient platform for collateralized lending.
+Liquid Nation is a modern DeFi protocol built with React that enables users to unlock liquidity from their digital assets without selling them. Built on blockchain technology, it provides a secure, transparent, and efficient platform for collateralized lending.
 
 ## Features
 
@@ -102,4 +102,4 @@ npm run preview
 
 ## License
 
-© 2024 Liquidnation. All rights reserved.
+© 2024 Liquid Nation. All rights reserved.

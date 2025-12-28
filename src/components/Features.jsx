@@ -4,7 +4,7 @@ const Features = () => {
   return (
     <section id="features" className="features">
       <div className="container">
-        <h2 className="section-title">Why Choose Liquidnation?</h2>
+        <h2 className="section-title">Why Choose Liquid Nation?</h2>
         <p className="section-subtitle">Built for the decentralized future of finance</p>
         <div className="features-grid">
           {features.map((feature, index) => (

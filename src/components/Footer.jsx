@@ -5,8 +5,8 @@ const Footer = () => {
         <div className="footer-content">
           <div className="footer-section">
             <div className="footer-logo">
-              <img src="/logo.svg" alt="Liquidnation" className="logo-image" />
-              <span>Liquidnation</span>
+              <img src="/logo.svg" alt="Liquid Nation" className="logo-image" />
+              <span>Liquid Nation</span>
             </div>
             <p className="footer-description">
               The premier decentralized protocol for collateralized lending and borrowing.
@@ -41,7 +41,7 @@ const Footer = () => {
           </div>
         </div>
         <div className="footer-bottom">
-          <p>&copy; 2024 Liquidnation. All rights reserved.</p>
+          <p>&copy; 2024 Liquid Nation. All rights reserved.</p>
           <div className="footer-links">
             <a href="#privacy">Privacy Policy</a>
             <a href="#terms">Terms of Service</a>

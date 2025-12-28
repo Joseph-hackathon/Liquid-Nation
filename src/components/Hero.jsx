@@ -18,7 +18,7 @@ const Hero = ({ onLaunchApp }) => {
       <div className="container">
         <div className="hero-content">
           <h1 className="hero-title">
-            Unlock Liquidity with <span className="gradient-text">Liquidnation</span>
+            Unlock Liquidity with <span className="gradient-text">Liquid Nation</span>
           </h1>
           <p className="hero-description">
             The premier decentralized protocol for collateralized lending and borrowing. 

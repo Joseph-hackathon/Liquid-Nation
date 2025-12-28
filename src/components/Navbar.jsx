@@ -25,8 +25,8 @@ const Navbar = ({ onLaunchApp }) => {
     <nav className="navbar">
       <div className="container nav-container">
         <div className="logo">
-          <img src="/logo.svg" alt="Liquidnation" className="logo-image" />
-          <span className="logo-text">Liquidnation</span>
+          <img src="/logo.svg" alt="Liquid Nation" className="logo-image" />
+          <span className="logo-text">Liquid Nation</span>
         </div>
         <div className={`nav-links ${mobileMenuOpen ? 'active' : ''}`}>
           <a href="#features" onClick={handleLinkClick}>Features</a>
