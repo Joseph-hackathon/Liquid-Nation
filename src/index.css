@@ -362,6 +362,17 @@ body {
 .nav-item {
   color: inherit;
   text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  transition: color 0.2s ease;
+}
+
+.nav-item:hover {
+  color: var(--nav-active);
 }
 
 .nav-item.active {
@@ -925,5 +936,232 @@ body {
 
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Form Styles for Create Order and Settings */
+.create-order-form,
+.settings-content {
+  padding: 32px;
+}
+
+.form-section {
+  margin-bottom: 32px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  font-weight: 700;
+  color: var(--text-strong);
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--text-strong);
+  background: #fdfaf4;
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.form-checkbox input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.form-help {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--text-subtle);
+  font-weight: 500;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.btn-submit {
+  background: linear-gradient(135deg, #1dd3d7, #0b6c8e);
+  color: #fdfaf4;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(29, 211, 215, 0.3);
+}
+
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(29, 211, 215, 0.4);
+}
+
+.btn-secondary-small {
+  background: transparent;
+  color: var(--text-strong);
+  border: 2px solid var(--border);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+
+.btn-secondary-small:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.order-type-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.order-type-btn {
+  flex: 1;
+  padding: 14px 20px;
+  border: 2px solid var(--border);
+  background: #fdfaf4;
+  color: var(--text-strong);
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.order-type-btn:hover {
+  border-color: var(--accent);
+}
+
+.order-type-btn.active {
+  background: linear-gradient(135deg, #1dd3d7, #0b6c8e);
+  color: #fdfaf4;
+  border-color: transparent;
+}
+
+.token-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.token-selector-btn {
+  padding: 10px 16px;
+  border: 2px solid var(--border);
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.token-selector-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.token-selector-btn.selected {
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.settings-section {
+  margin-bottom: 40px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-section:last-of-type {
+  border-bottom: none;
+}
+
+.settings-section-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-strong);
+  margin-bottom: 20px;
+}
+
+.wallet-display {
+  padding: 12px 16px;
+  background: #e4f6ff;
+  border-radius: 10px;
+  font-weight: 700;
+  color: var(--nav-bg);
+  margin-bottom: 8px;
+}
+
+.empty-state {
+  padding: 60px 32px;
+  text-align: center;
+  color: var(--text-subtle);
+}
+
+.empty-state p {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.empty-state p:first-child {
+  font-size: 18px;
+  color: var(--text-strong);
+}
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .order-type-buttons {
+    flex-direction: column;
+  }
+
+  .create-order-form,
+  .settings-content {
+    padding: 20px;
   }
 }
