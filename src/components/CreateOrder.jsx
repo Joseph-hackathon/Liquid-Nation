@@ -26,6 +26,7 @@ function CreateOrder({ chainThemes, onNavigate }) {
     
     // Create the order with all the form data
     const newOrder = {
+      orderType,
       asset: `${amount} ${asset}`,
       chain,
       accepts: acceptedTokens,
@@ -36,6 +37,7 @@ function CreateOrder({ chainThemes, onNavigate }) {
     createOrder(newOrder);
     
     // Reset form
+    setOrderType('limit-buy');
     setAsset('');
     setAmount('');
     setChain('ETH');
