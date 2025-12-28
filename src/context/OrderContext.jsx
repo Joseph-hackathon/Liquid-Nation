@@ -18,8 +18,8 @@ export const OrderProvider = ({ children }) => {
   const createOrder = (orderData) => {
     // Generate a unique order ID
     const maxId = orders.reduce((max, order) => {
-      const id = parseInt(order.orderId.replace('#', ''));
-      return id > max ? id : max;
+      const id = parseInt(order.orderId.replace('#', ''), 10);
+      return !isNaN(id) && id > max ? id : max;
     }, 0);
     
     const newOrder = {
