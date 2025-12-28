@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { offers } from '../data';
+import { useOrders } from '../context/OrderContext';
 
 function Avatar({ symbol, color }) {
   return (
@@ -34,8 +34,11 @@ function StatusCell({ percent }) {
 }
 
 function Dashboard({ chainThemes }) {
-  // Filter for user's orders (for demo, we'll show orders from HunterBeast.eth)
-  const userOrders = offers.filter(offer => offer.name === 'HunterBeast.eth');
+  const { orders, deleteOrder } = useOrders();
+  
+  // Filter for user's orders (orders created by the current user)
+  // For demo purposes, we identify user orders by the placeholder name used in OrderContext
+  const userOrders = orders.filter(order => order.name === '0xAB5....39c81');
   
   // Pagination state
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -87,6 +90,16 @@ function Dashboard({ chainThemes }) {
     }
   };
 
+  const handleCancelOrder = (orderId) => {
+    if (window.confirm('Are you sure you want to cancel this order?')) {
+      deleteOrder(orderId);
+      // If we're on a page that becomes empty after deletion, go back a page
+      if (paginatedOrders.length === 1 && currentPage > 1) {
+        setCurrentPage(currentPage - 1);
+      }
+    }
+  };
+
   return (
     <section className="offers-panel" aria-label="Your orders">
       <div className="panel-header">
@@ -109,6 +122,7 @@ function Dashboard({ chainThemes }) {
               <div className="table-cell">Partial</div>
               <div className="table-cell">Status</div>
               <div className="table-cell">Premium</div>
+              <div className="table-cell">Actions</div>
             </div>
 
             {paginatedOrders.map((offer) => (
@@ -131,6 +145,16 @@ function Dashboard({ chainThemes }) {
                   <StatusCell percent={offer.status} />
                 </div>
                 <div className="table-cell text-strong">{offer.premium}</div>
+                <div className="table-cell">
+                  <button
+                    type="button"
+                    className="btn-cancel-order"
+                    onClick={() => handleCancelOrder(offer.orderId)}
+                    aria-label={`Cancel order ${offer.orderId}`}
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             ))}
           </div>
