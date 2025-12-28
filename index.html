@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Liquid Nation - P2P Cross-Chain Exchange Protocol" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <script>
+      (() => {
+        try {
+          const savedTheme = localStorage.getItem('theme');
+          const isDark = savedTheme ? savedTheme === 'dark' : true;
+          document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        } catch (error) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      })();
+    </script>
     <title>Liquid Nation - P2P Cross-Chain Exchange</title>
   </head>
   <body>
