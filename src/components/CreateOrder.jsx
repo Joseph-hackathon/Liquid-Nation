@@ -3,7 +3,7 @@ import { useOrders } from '../context/OrderContext';
 
 function CreateOrder({ chainThemes, onNavigate }) {
   const { createOrder } = useOrders();
-  const [orderType, setOrderType] = useState('buy');
+  const [orderType, setOrderType] = useState('limit-buy');
   const [asset, setAsset] = useState('');
   const [amount, setAmount] = useState('');
   const [chain, setChain] = useState('ETH');
@@ -62,24 +62,31 @@ function CreateOrder({ chainThemes, onNavigate }) {
             <div className="order-type-buttons">
               <button
                 type="button"
-                className={`order-type-btn ${orderType === 'buy' ? 'active' : ''}`}
-                onClick={() => setOrderType('buy')}
+                className={`order-type-btn ${orderType === 'limit-buy' ? 'active' : ''}`}
+                onClick={() => setOrderType('limit-buy')}
               >
-                Buy Order
+                Limit Buy Order
               </button>
               <button
                 type="button"
-                className={`order-type-btn ${orderType === 'sell' ? 'active' : ''}`}
-                onClick={() => setOrderType('sell')}
+                className={`order-type-btn ${orderType === 'limit-sell' ? 'active' : ''}`}
+                onClick={() => setOrderType('limit-sell')}
               >
-                Sell Order
+                Limit Sell Order
               </button>
               <button
                 type="button"
-                className={`order-type-btn ${orderType === 'swap' ? 'active' : ''}`}
-                onClick={() => setOrderType('swap')}
+                className={`order-type-btn ${orderType === 'market-buy' ? 'active' : ''}`}
+                onClick={() => setOrderType('market-buy')}
               >
-                Swap Order
+                Market Buy Order
+              </button>
+              <button
+                type="button"
+                className={`order-type-btn ${orderType === 'market-sell' ? 'active' : ''}`}
+                onClick={() => setOrderType('market-sell')}
+              >
+                Market Sell Order
               </button>
             </div>
           </div>
