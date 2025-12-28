@@ -172,13 +172,18 @@ function StatusCell({ percent }) {
   );
 }
 
-function MainApp() {
+function MainApp({ onBackToLanding }) {
   return (
     <div className="app-shell">
       <header className="top-bar">
-        <div className="logo-mark" aria-label="Liquid Nation logo">
+        <button 
+          className="logo-mark" 
+          aria-label="Back to home"
+          onClick={onBackToLanding}
+          type="button"
+        >
           <img src="/logo.svg" alt="Liquid Nation" className="logo-image" />
-        </div>
+        </button>
         <div className="wallet-pill">0x123...</div>
       </header>
 
@@ -279,8 +284,12 @@ function App() {
     setShowApp(true);
   };
 
+  const handleBackToLanding = () => {
+    setShowApp(false);
+  };
+
   if (showApp) {
-    return <MainApp />;
+    return <MainApp onBackToLanding={handleBackToLanding} />;
   }
 
   return <LandingPage onLaunchApp={handleLaunchApp} />;

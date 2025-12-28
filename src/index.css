@@ -45,6 +45,32 @@ body {
   align-items: center;
 }
 
+.logo-mark {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.logo-mark:hover {
+  opacity: 0.8;
+}
+
+.logo-mark:focus {
+  outline: 2px solid #0b6c8e;
+  outline-offset: 4px;
+}
+
+.logo-mark:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.logo-mark:focus-visible {
+  outline: 2px solid #0b6c8e;
+  outline-offset: 4px;
+}
+
 .logo-mark img {
   width: 96px;
   height: auto;
