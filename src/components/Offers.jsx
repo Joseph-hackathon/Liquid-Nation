@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { offers } from '../data';
+import { useOrders } from '../context/OrderContext';
 
 function Avatar({ symbol, color }) {
   return (
@@ -34,6 +34,7 @@ function StatusCell({ percent }) {
 }
 
 function Offers({ chainThemes, onNavigate }) {
+  const { orders, deleteOrder } = useOrders();
   const [showCreateMenu, setShowCreateMenu] = useState(false);
   const menuRef = useRef(null);
 
@@ -56,6 +57,12 @@ function Offers({ chainThemes, onNavigate }) {
   const handleCreateOrderClick = () => {
     setShowCreateMenu(false);
     onNavigate('create');
+  };
+
+  const handleDeleteOrder = (orderId) => {
+    if (window.confirm('Are you sure you want to cancel this order?')) {
+      deleteOrder(orderId);
+    }
   };
 
   return (
@@ -91,9 +98,10 @@ function Offers({ chainThemes, onNavigate }) {
           <div className="table-cell">Partial</div>
           <div className="table-cell">Status</div>
           <div className="table-cell">Premium</div>
+          <div className="table-cell">Actions</div>
         </div>
 
-        {offers.map((offer) => (
+        {orders.map((offer) => (
           <div className="table-row" key={`${offer.name}-${offer.orderId}`}>
             <div className="table-cell profile-cell">
               <Avatar symbol={offer.avatar} color={offer.avatarColor} />
@@ -113,6 +121,16 @@ function Offers({ chainThemes, onNavigate }) {
               <StatusCell percent={offer.status} />
             </div>
             <div className="table-cell text-strong">{offer.premium}</div>
+            <div className="table-cell">
+              <button
+                type="button"
+                className="btn-delete-order"
+                onClick={() => handleDeleteOrder(offer.orderId)}
+                aria-label="Cancel order"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         ))}
       </div>
@@ -130,7 +148,7 @@ function Offers({ chainThemes, onNavigate }) {
         <div className="pagination">
           <div className="per-page">Orders Per Page:</div>
           <div className="dropdown">10 ▼</div>
-          <div className="page-window">1-10 of 92</div>
+          <div className="page-window">1-{Math.min(10, orders.length)} of {orders.length}</div>
           <div className="pager-arrows">
             <button type="button" aria-label="Previous page">‹</button>
             <button type="button" aria-label="Next page">›</button>

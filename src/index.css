@@ -227,6 +227,23 @@ body {
   box-shadow: 0 6px 20px rgba(29, 211, 215, 0.4);
 }
 
+.btn-delete-order {
+  background: #ff4444;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-delete-order:hover {
+  background: #cc0000;
+  transform: scale(1.05);
+}
+
 .create-order-menu {
   position: absolute;
   top: calc(100% + 8px);

@@ -12,6 +12,7 @@ import CreateOrder from './components/CreateOrder';
 import Settings from './components/Settings';
 import ThemeToggle from './components/ThemeToggle';
 import { chainThemes } from './data';
+import { OrderProvider } from './context/OrderContext';
 
 function MainApp({ onBackToLanding }) {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -27,7 +28,7 @@ function MainApp({ onBackToLanding }) {
       case 'offers':
         return <Offers chainThemes={chainThemes} onNavigate={handleNavigate} />;
       case 'create':
-        return <CreateOrder chainThemes={chainThemes} />;
+        return <CreateOrder chainThemes={chainThemes} onNavigate={handleNavigate} />;
       case 'settings':
         return <Settings />;
       default:
@@ -116,7 +117,11 @@ function App() {
   };
 
   if (showApp) {
-    return <MainApp onBackToLanding={handleBackToLanding} />;
+    return (
+      <OrderProvider>
+        <MainApp onBackToLanding={handleBackToLanding} />
+      </OrderProvider>
+    );
   }
 
   return <LandingPage onLaunchApp={handleLaunchApp} />;

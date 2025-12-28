@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useOrders } from '../context/OrderContext';
 
-function CreateOrder({ chainThemes }) {
+function CreateOrder({ chainThemes, onNavigate }) {
+  const { createOrder } = useOrders();
   const [orderType, setOrderType] = useState('buy');
   const [asset, setAsset] = useState('');
   const [amount, setAmount] = useState('');
@@ -21,8 +23,30 @@ function CreateOrder({ chainThemes }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // In a real app, this would create the order
-    alert(`Order created!\nType: ${orderType}\nAsset: ${asset}\nAmount: ${amount}\nChain: ${chain}`);
+    
+    // Create the order with all the form data
+    const newOrder = {
+      asset: `${amount} ${asset}`,
+      chain,
+      accepts: acceptedTokens,
+      partial: partialFills,
+      premium: `${premium}%`,
+    };
+    
+    createOrder(newOrder);
+    
+    // Reset form
+    setAsset('');
+    setAmount('');
+    setChain('ETH');
+    setAcceptedTokens([]);
+    setPartialFills(true);
+    setPremium('');
+    
+    // Navigate back to offers page if onNavigate is provided
+    if (onNavigate) {
+      onNavigate('offers');
+    }
   };
 
   return (
