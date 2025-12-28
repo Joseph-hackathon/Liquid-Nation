@@ -4,7 +4,7 @@ A decentralized liquidity protocol for collateralized lending and borrowing.
 
 ## Overview
 
-Liquidnation is a modern DeFi protocol that enables users to unlock liquidity from their digital assets without selling them. Built on blockchain technology, it provides a secure, transparent, and efficient platform for collateralized lending.
+Liquidnation is a modern DeFi protocol built with React that enables users to unlock liquidity from their digital assets without selling them. Built on blockchain technology, it provides a secure, transparent, and efficient platform for collateralized lending.
 
 ## Features
 
@@ -17,34 +17,81 @@ Liquidnation is a modern DeFi protocol that enables users to unlock liquidity fr
 
 ## Getting Started
 
-Simply open `index.html` in a web browser to view the Liquidnation landing page.
+### Prerequisites
+
+- Node.js (v18 or higher)
+- npm or yarn
+
+### Installation
+
+```bash
+# Install dependencies
+npm install
+```
+
+### Development
+
+```bash
+# Run the development server
+npm run dev
+```
+
+The application will be available at `http://localhost:5173/`
+
+### Build
+
+```bash
+# Build for production
+npm run build
+```
+
+The built files will be in the `dist` directory.
+
+### Preview Production Build
+
+```bash
+# Preview the production build locally
+npm run preview
+```
 
 ## Project Structure
 
 ```
 .
-├── index.html      # Main landing page
-├── styles.css      # Styling and layout
-├── script.js       # Interactive functionality
-├── favicon.svg     # Site favicon
-└── README.md       # This file
+├── public/             # Static assets
+│   └── favicon.svg     # Site favicon
+├── src/
+│   ├── components/     # React components
+│   │   ├── Navbar.jsx
+│   │   ├── Hero.jsx
+│   │   ├── Features.jsx
+│   │   ├── HowItWorks.jsx
+│   │   ├── Stats.jsx
+│   │   ├── CTA.jsx
+│   │   └── Footer.jsx
+│   ├── App.jsx         # Main app component
+│   ├── main.jsx        # Entry point
+│   └── index.css       # Global styles
+├── index.html          # HTML template
+├── package.json        # Dependencies and scripts
+└── vite.config.js      # Vite configuration
 ```
 
 ## Technology Stack
 
-- HTML5
-- CSS3 (with CSS Variables and Grid/Flexbox)
-- Vanilla JavaScript (ES6+)
-- SVG Graphics
+- **React** 19.2.0 - UI library
+- **Vite** 7.2.4 - Build tool and dev server
+- **CSS3** - Styling (with CSS Variables and Grid/Flexbox)
+- **SVG Graphics** - Icons and logos
 
 ## Features Implemented
 
 - Responsive design for mobile, tablet, and desktop
 - Smooth scrolling navigation
-- Animated statistics counters
 - Interactive feature cards
 - Modern gradient design system
-- Mobile-friendly navigation menu
+- Mobile-friendly navigation menu with toggle
+- Component-based architecture
 
 ## Browser Support
 
