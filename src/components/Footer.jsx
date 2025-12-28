@@ -5,16 +5,7 @@ const Footer = () => {
         <div className="footer-content">
           <div className="footer-section">
             <div className="footer-logo">
-              <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="20" cy="20" r="18" stroke="url(#gradient2)" strokeWidth="2"/>
-                <path d="M15 15L25 20L15 25V15Z" fill="url(#gradient2)"/>
-                <defs>
-                  <linearGradient id="gradient2" x1="0" y1="0" x2="40" y2="40">
-                    <stop offset="0%" stopColor="#667eea"/>
-                    <stop offset="100%" stopColor="#764ba2"/>
-                  </linearGradient>
-                </defs>
-              </svg>
+              <img src="/logo.svg" alt="Liquidnation" className="logo-image" />
               <span>Liquidnation</span>
             </div>
             <p className="footer-description">

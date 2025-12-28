@@ -168,7 +168,7 @@ function App() {
     <div className="app-shell">
       <header className="top-bar">
         <div className="logo-mark" aria-label="Liquid Nation logo">
-          <img src="/favicon.svg" alt="Liquid Nation" />
+          <img src="/logo.svg" alt="Liquid Nation" />
         </div>
         <div className="wallet-pill">0x123...</div>
       </header>

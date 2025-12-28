@@ -24,16 +24,7 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="container nav-container">
         <div className="logo">
-          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="20" cy="20" r="18" stroke="url(#gradient)" strokeWidth="2"/>
-            <path d="M15 15L25 20L15 25V15Z" fill="url(#gradient)"/>
-            <defs>
-              <linearGradient id="gradient" x1="0" y1="0" x2="40" y2="40">
-                <stop offset="0%" stopColor="#667eea"/>
-                <stop offset="100%" stopColor="#764ba2"/>
-              </linearGradient>
-            </defs>
-          </svg>
+          <img src="/logo.svg" alt="Liquidnation" className="logo-image" />
           <span className="logo-text">Liquidnation</span>
         </div>
         <div className={`nav-links ${mobileMenuOpen ? 'active' : ''}`}>

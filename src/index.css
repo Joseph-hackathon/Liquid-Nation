@@ -50,6 +50,19 @@ body {
   height: auto;
 }
 
+.logo-image {
+  display: block;
+  height: auto;
+}
+
+.logo .logo-image {
+  width: 40px;
+}
+
+.footer-logo .logo-image {
+  width: 32px;
+}
+
 .wallet-pill {
   background: linear-gradient(135deg, #0b6c8e, #0b4f72);
   color: #fdfaf4;
