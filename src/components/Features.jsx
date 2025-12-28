@@ -1,4 +1,4 @@
-import { features } from '../data/features.jsx';
+import { features } from '../data';
 
 const Features = () => {
   return (

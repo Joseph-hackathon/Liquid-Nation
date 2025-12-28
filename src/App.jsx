@@ -6,8 +6,7 @@ import HowItWorks from './components/HowItWorks';
 import Stats from './components/Stats';
 import CTA from './components/CTA';
 import Footer from './components/Footer';
-import { offers } from './data/offers';
-import { chainThemes } from './data/chainThemes';
+import { offers, chainThemes } from './data';
 
 function Avatar({ symbol, color }) {
   return (

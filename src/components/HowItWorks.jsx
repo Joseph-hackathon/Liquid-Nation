@@ -1,5 +1,5 @@
 import React from 'react';
-import { steps } from '../data/steps';
+import { steps } from '../data';
 
 const HowItWorks = () => {
   return (

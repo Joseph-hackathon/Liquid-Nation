@@ -1,4 +1,4 @@
-import { protocolStats } from '../data/stats';
+import { protocolStats } from '../data';
 
 const Stats = () => {
   return (

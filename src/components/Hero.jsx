@@ -1,4 +1,4 @@
-import { heroStats } from '../data/stats';
+import { heroStats } from '../data';
 
 const Hero = ({ onLaunchApp }) => {
   const handleLearnMore = (e) => {
