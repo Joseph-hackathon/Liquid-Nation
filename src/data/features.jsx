@@ -6,8 +6,8 @@ export const features = [
         <path d="M24 12V24L32 28" stroke="#667eea" strokeWidth="2" strokeLinecap="round"/>
       </svg>
     ),
-    title: "Instant Loans",
-    description: "Access liquidity in seconds with our streamlined lending protocol"
+    title: "Instant Swaps",
+    description: "Execute cross-chain trades in seconds with our streamlined exchange protocol"
   },
   {
     icon: (
@@ -16,8 +16,8 @@ export const features = [
         <path d="M24 20V28M20 24H28" stroke="#667eea" strokeWidth="2" strokeLinecap="round"/>
       </svg>
     ),
-    title: "Flexible Collateral",
-    description: "Support for multiple asset types including NFTs and tokens"
+    title: "Multi-Chain Support",
+    description: "Trade assets seamlessly across multiple blockchain networks"
   },
   {
     icon: (
@@ -37,8 +37,8 @@ export const features = [
         <path d="M24 18V30" stroke="#667eea" strokeWidth="2"/>
       </svg>
     ),
-    title: "Fair Rates",
-    description: "Competitive interest rates driven by market dynamics"
+    title: "Fair Market Prices",
+    description: "Competitive rates driven by real-time market dynamics"
   },
   {
     icon: (
@@ -57,7 +57,7 @@ export const features = [
         <path d="M16 16V12C16 8 20 8 24 8C28 8 32 8 32 12V16" stroke="#667eea" strokeWidth="2"/>
       </svg>
     ),
-    title: "Protected Deposits",
-    description: "Insurance fund to protect lenders and borrowers"
+    title: "Protected Trades",
+    description: "Escrow mechanism to protect both parties in every transaction"
   }
 ];

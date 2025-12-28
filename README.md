@@ -1,19 +1,19 @@
 # Liquid Nation
 
-A decentralized liquidity protocol for collateralized lending and borrowing.
+A decentralized P2P cross-chain exchange protocol for seamless asset trading.
 
 ## Overview
 
-Liquid Nation is a modern DeFi protocol built with React that enables users to unlock liquidity from their digital assets without selling them. Built on blockchain technology, it provides a secure, transparent, and efficient platform for collateralized lending.
+Liquid Nation is a modern DeFi protocol built with React that enables users to trade digital assets directly with each other across multiple blockchains. Built on blockchain technology, it provides a secure, transparent, and efficient platform for peer-to-peer cross-chain exchanges.
 
 ## Features
 
-- **Instant Loans**: Access liquidity in seconds with our streamlined lending protocol
-- **Flexible Collateral**: Support for multiple asset types including NFTs and tokens
+- **Instant Swaps**: Execute cross-chain trades in seconds with our streamlined exchange protocol
+- **Multi-Chain Support**: Trade assets across multiple blockchain networks seamlessly
 - **Decentralized**: Non-custodial protocol with full user control over assets
-- **Fair Rates**: Competitive interest rates driven by market dynamics
+- **Fair Market Prices**: Competitive rates driven by real-time market dynamics
 - **Secure Smart Contracts**: Audited by leading security firms for maximum protection
-- **Protected Deposits**: Insurance fund to protect lenders and borrowers
+- **Protected Trades**: Escrow mechanism to protect both parties in every transaction
 
 ## Getting Started
 

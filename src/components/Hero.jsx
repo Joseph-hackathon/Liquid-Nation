@@ -18,11 +18,11 @@ const Hero = ({ onLaunchApp }) => {
       <div className="container">
         <div className="hero-content">
           <h1 className="hero-title">
-            Unlock Liquidity with <span className="gradient-text">Liquid Nation</span>
+            Trade Across Chains with <span className="gradient-text">Liquid Nation</span>
           </h1>
           <p className="hero-description">
-            The premier decentralized protocol for collateralized lending and borrowing. 
-            Access instant liquidity without selling your assets.
+            The premier decentralized P2P exchange for seamless cross-chain trading. 
+            Swap assets directly with peers across multiple blockchain networks.
           </p>
           <div className="hero-buttons">
             <button className="btn-primary btn-large" onClick={onLaunchApp}>Get Started</button>

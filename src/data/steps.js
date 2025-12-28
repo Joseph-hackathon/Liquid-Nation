@@ -6,17 +6,17 @@ export const steps = [
   },
   {
     number: "2",
-    title: "Deposit Collateral",
-    description: "Lock your assets as collateral for a loan"
+    title: "Create or Browse Orders",
+    description: "Create a trade order or browse existing peer offers"
   },
   {
     number: "3",
-    title: "Borrow",
-    description: "Receive funds instantly to your wallet"
+    title: "Execute Swap",
+    description: "Match with a peer and execute the cross-chain swap"
   },
   {
     number: "4",
-    title: "Repay & Unlock",
-    description: "Repay the loan and retrieve your collateral"
+    title: "Receive Assets",
+    description: "Assets are transferred instantly to your wallet"
   }
 ];
