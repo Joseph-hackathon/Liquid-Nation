@@ -65,7 +65,7 @@ function Offers({ chainThemes, onNavigate }) {
 
   // Calculate pagination values
   const totalOrders = orders.length;
-  const totalPages = Math.ceil(totalOrders / itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(totalOrders / itemsPerPage));
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalOrders);
   const paginatedOrders = orders.slice(startIndex, endIndex);
@@ -223,7 +223,7 @@ function Offers({ chainThemes, onNavigate }) {
               type="button" 
               aria-label="Next page"
               onClick={handleNextPage}
-              disabled={currentPage === totalPages || totalOrders === 0}
+              disabled={currentPage >= totalPages}
             >
               ›
             </button>
