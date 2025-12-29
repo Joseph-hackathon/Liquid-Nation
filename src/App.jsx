@@ -10,6 +10,7 @@ import Dashboard from './components/Dashboard';
 import Offers from './components/Offers';
 import CreateOrder from './components/CreateOrder';
 import Settings from './components/Settings';
+import Swap from './components/Swap';
 import ThemeToggle from './components/ThemeToggle';
 import { chainThemes } from './data';
 import { OrderProvider } from './context/OrderContext';
@@ -29,6 +30,8 @@ function MainApp({ onBackToLanding }) {
         return <Offers chainThemes={chainThemes} onNavigate={handleNavigate} />;
       case 'create':
         return <CreateOrder chainThemes={chainThemes} onNavigate={handleNavigate} />;
+      case 'swap':
+        return <Swap chainThemes={chainThemes} />;
       case 'settings':
         return <Settings />;
       default:
@@ -71,6 +74,13 @@ function MainApp({ onBackToLanding }) {
           type="button"
         >
           Offers
+        </button>
+        <button 
+          className={`nav-item ${currentPage === 'swap' ? 'active' : ''}`}
+          onClick={() => handleNavigate('swap')}
+          type="button"
+        >
+          Swap
         </button>
         <button 
           className={`nav-item ${currentPage === 'create' ? 'active' : ''}`}
