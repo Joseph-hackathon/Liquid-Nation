@@ -24,7 +24,7 @@ function MainApp({ onBackToLanding }) {
   const renderPage = () => {
     switch (currentPage) {
       case 'dashboard':
-        return <Dashboard chainThemes={chainThemes} />;
+        return <Dashboard chainThemes={chainThemes} onNavigate={handleNavigate} />;
       case 'offers':
         return <Offers chainThemes={chainThemes} onNavigate={handleNavigate} />;
       case 'create':
@@ -32,7 +32,7 @@ function MainApp({ onBackToLanding }) {
       case 'settings':
         return <Settings />;
       default:
-        return <Dashboard chainThemes={chainThemes} />;
+        return <Dashboard chainThemes={chainThemes} onNavigate={handleNavigate} />;
     }
   };
 

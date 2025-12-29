@@ -33,7 +33,7 @@ function StatusCell({ percent }) {
   );
 }
 
-function Dashboard({ chainThemes }) {
+function Dashboard({ chainThemes, onNavigate }) {
   const { orders, deleteOrder } = useOrders();
   
   // Filter for user's orders (orders created by the current user)
@@ -104,6 +104,14 @@ function Dashboard({ chainThemes }) {
     <section className="offers-panel" aria-label="Your orders">
       <div className="panel-header">
         <h1>My Orders</h1>
+        <button
+          type="button"
+          className="btn-create-order"
+          onClick={() => onNavigate('create')}
+          aria-label="Create new order"
+        >
+          Create Order
+        </button>
       </div>
 
       {userOrders.length === 0 ? (
