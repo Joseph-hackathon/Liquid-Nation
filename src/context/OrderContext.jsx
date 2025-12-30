@@ -26,7 +26,7 @@ export const OrderProvider = ({ children }) => {
     // Prefer BTC wallet, fallback to EVM wallet, then to unknown
     let displayName = 'Unknown Wallet';
     if (orderData.btcWallet) {
-      displayName = `${orderData.btcWallet.slice(0, 6)}...${orderData.btcWallet.slice(-5)}`;
+      displayName = `${orderData.btcWallet.slice(0, 6)}...${orderData.btcWallet.slice(-4)}`;
     } else if (orderData.evmWallet) {
       displayName = `${orderData.evmWallet.slice(0, 6)}...${orderData.evmWallet.slice(-4)}`;
     }
