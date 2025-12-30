@@ -244,6 +244,12 @@ body {
   color: var(--text-strong);
 }
 
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
 .create-order-wrapper {
   position: relative;
 }
@@ -264,6 +270,25 @@ body {
 .btn-create-order:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(29, 211, 215, 0.4);
+}
+
+.btn-cancel-all-orders {
+  background: transparent;
+  color: #e74c3c;
+  border: 2px solid #e74c3c;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-cancel-all-orders:hover {
+  background: #e74c3c;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
 }
 
 .btn-delete-order {
