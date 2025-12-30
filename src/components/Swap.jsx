@@ -103,7 +103,7 @@ function Swap({ chainThemes }) {
 
   // Calculate toAmount based on fromAmount
   const toAmount = fromAmount && !isNaN(fromAmount) 
-    ? (parseFloat(fromAmount) * exchangeRate).toFixed(6)
+    ? (parseFloat(fromAmount) * exchangeRate).toFixed(4)
     : '';
 
   const handleSwapDirection = () => {
@@ -198,7 +198,7 @@ function Swap({ chainThemes }) {
           <div className="swap-rate-info">
             <div className="swap-rate-row">
               <span>Rate</span>
-              <span>1 {fromToken} = {exchangeRate.toFixed(6)} {toToken}</span>
+              <span>1 {fromToken} = {exchangeRate.toFixed(4)} {toToken}</span>
             </div>
             <div className="swap-rate-row">
               <span>Slippage Tolerance</span>
