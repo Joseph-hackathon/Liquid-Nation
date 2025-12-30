@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import ThemeToggle from './ThemeToggle';
 import { useTheme } from '../context/ThemeContext';
+import { useWallet } from '../context/WalletContext';
 
 function Settings() {
   const [username, setUsername] = useState('HunterBeast.eth');
@@ -8,6 +9,7 @@ function Settings() {
   const [notifications, setNotifications] = useState(true);
   const [autoRefresh, setAutoRefresh] = useState(true);
   const { isDarkMode } = useTheme();
+  const { address, connected, disconnect } = useWallet();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -51,8 +53,16 @@ function Settings() {
 
             <div className="form-group">
               <label className="form-label">Wallet Address</label>
-              <div className="wallet-display">0x123...456</div>
-              <button type="button" className="btn-secondary-small">Disconnect</button>
+              <div className="wallet-display">{connected && address ? address : 'Not Connected'}</div>
+              {connected && (
+                <button 
+                  type="button" 
+                  className="btn-secondary-small"
+                  onClick={() => disconnect()}
+                >
+                  Disconnect
+                </button>
+              )}
             </div>
           </div>
 

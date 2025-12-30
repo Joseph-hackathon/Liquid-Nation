@@ -1698,3 +1698,119 @@ body {
     padding: 20px;
   }
 }
+
+/* Wallet Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 24px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-header h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-strong);
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 32px;
+  color: var(--text-subtle);
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  background: var(--border);
+  color: var(--text-strong);
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.wallet-connect-description {
+  color: var(--text-subtle);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.wallet-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.wallet-button {
+  background: var(--border);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-strong);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.wallet-button:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fdfaf4;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(29, 211, 215, 0.3);
+}
+
+.wallet-button:active {
+  transform: translateY(0);
+}
+
+.wallet-pill {
+  cursor: pointer;
+}
+
+@media (max-width: 480px) {
+  .wallet-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .modal-content {
+    width: 95%;
+  }
+}
