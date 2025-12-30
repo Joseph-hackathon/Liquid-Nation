@@ -743,11 +743,15 @@ body {
 .hero {
   padding: 100px 0 80px;
   text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 
 .hero-content {
   max-width: 900px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
 .hero-title {
