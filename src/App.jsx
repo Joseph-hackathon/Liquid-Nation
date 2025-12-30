@@ -16,11 +16,13 @@ import WalletConnect from './components/WalletConnect';
 import { chainThemes } from './data';
 import { OrderProvider } from './context/OrderContext';
 import { useWallet } from './context/WalletContext';
+import { useEVMWallet } from './context/EVMWalletContext';
 
 function MainApp({ onBackToLanding }) {
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [showWalletModal, setShowWalletModal] = useState(false);
-  const { address, connected } = useWallet();
+  const { address: btcAddress, connected: btcConnected } = useWallet();
+  const { address: evmAddress, connected: evmConnected } = useEVMWallet();
 
   const handleNavigate = (page) => {
     setCurrentPage(page);
@@ -44,7 +46,7 @@ function MainApp({ onBackToLanding }) {
   };
 
   const formatAddress = (addr) => {
-    if (!addr) return 'Connect Wallet';
+    if (!addr) return '';
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
   };
 
@@ -61,13 +63,36 @@ function MainApp({ onBackToLanding }) {
         </button>
         <div className="top-bar-actions">
           <ThemeToggle className="top-bar-theme-toggle" />
-          <button 
-            className="wallet-pill" 
-            onClick={() => !connected && setShowWalletModal(true)}
-            type="button"
-          >
-            {connected ? formatAddress(address) : 'Connect Wallet'}
-          </button>
+          <div className="wallet-group">
+            {btcConnected && (
+              <div className="wallet-pill connected" title="Bitcoin Wallet">
+                <span className="wallet-label">BTC:</span> {formatAddress(btcAddress)}
+              </div>
+            )}
+            {evmConnected && (
+              <div className="wallet-pill connected" title="EVM Wallet">
+                <span className="wallet-label">EVM:</span> {formatAddress(evmAddress)}
+              </div>
+            )}
+            {!btcConnected && !evmConnected && (
+              <button 
+                className="wallet-pill" 
+                onClick={() => setShowWalletModal(true)}
+                type="button"
+              >
+                Connect Wallet
+              </button>
+            )}
+            {(btcConnected || evmConnected) && (
+              <button 
+                className="wallet-pill secondary" 
+                onClick={() => setShowWalletModal(true)}
+                type="button"
+              >
+                +
+              </button>
+            )}
+          </div>
         </div>
       </header>
 
