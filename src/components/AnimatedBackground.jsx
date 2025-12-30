@@ -153,26 +153,27 @@ const AnimatedBackground = () => {
     const updateParticles = () => {
       particlesRef.current.forEach(particle => {
         // Mouse interaction
-        if (mouseRef.current.x !== null && mouseRef.current.y !== null) {
-          const dx = mouseRef.current.x - particle.x;
-          const dy = mouseRef.current.y - particle.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          const maxDistance = 200;
-          
-          if (distance < maxDistance) {
-            // Repel particles away from mouse with stronger force
-            const force = (1 - distance / maxDistance) * 1.5;
-            particle.x -= (dx / distance) * force;
-            particle.y -= (dy / distance) * force;
+        const shouldEnhanceSize = 
+          mouseRef.current.x !== null && 
+          mouseRef.current.y !== null &&
+          (() => {
+            const dx = mouseRef.current.x - particle.x;
+            const dy = mouseRef.current.y - particle.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const maxDistance = 200;
             
-            // Increase size on hover
-            particle.hoverSize = Math.min(particle.size * 2, 12);
-          } else {
-            particle.hoverSize = particle.size;
-          }
-        } else {
-          particle.hoverSize = particle.size;
-        }
+            if (distance < maxDistance) {
+              // Repel particles away from mouse with stronger force
+              const force = (1 - distance / maxDistance) * 1.5;
+              particle.x -= (dx / distance) * force;
+              particle.y -= (dy / distance) * force;
+              return true;
+            }
+            return false;
+          })();
+        
+        // Set hover size based on proximity to mouse
+        particle.hoverSize = shouldEnhanceSize ? Math.min(particle.size * 2, 12) : particle.size;
 
         particle.x += particle.speedX;
         particle.y += particle.speedY;
