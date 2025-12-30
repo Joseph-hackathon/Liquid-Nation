@@ -1,4 +1,5 @@
 import { heroStats } from '../data';
+import AnimatedBackground from './AnimatedBackground';
 
 const Hero = ({ onLaunchApp }) => {
   const handleLearnMore = (e) => {
@@ -15,6 +16,7 @@ const Hero = ({ onLaunchApp }) => {
 
   return (
     <section className="hero">
+      <AnimatedBackground />
       <div className="container">
         <div className="hero-content">
           <h1 className="hero-title">
