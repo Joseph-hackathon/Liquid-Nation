@@ -81,8 +81,19 @@ npm run preview
 
 - **React** 19.2.0 - UI library
 - **Vite** 7.2.4 - Build tool and dev server
+- **LaserEyes React** 0.0.79 - Bitcoin wallet integration
+- **WalletConnect + Wagmi** - EVM wallet integration
 - **CSS3** - Styling (with CSS Variables and Grid/Flexbox)
 - **SVG Graphics** - Icons and logos
+
+## Wallet Integration
+
+Liquid Nation uses a dual wallet system to support cross-chain trading:
+
+- **Bitcoin Wallet**: Primary authentication using LaserEyes (supports Unisat, Leather, Magic Eden, OKX, Xverse, Wizz, Phantom, OYL)
+- **EVM Wallet**: For cross-chain orders using WalletConnect (supports MetaMask, Coinbase Wallet, WalletConnect, and more)
+
+See [WALLETCONNECT_SETUP.md](./WALLETCONNECT_SETUP.md) for detailed setup instructions.
 
 ## Features Implemented
 
@@ -92,6 +103,8 @@ npm run preview
 - Modern gradient design system
 - Mobile-friendly navigation menu with toggle
 - Component-based architecture
+- Dual wallet system (Bitcoin + EVM)
+- Cross-chain order management
 
 ## Browser Support
 
