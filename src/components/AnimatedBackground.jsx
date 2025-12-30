@@ -7,6 +7,7 @@ const AnimatedBackground = () => {
   const animationRef = useRef(null);
   const themeRef = useRef('dark');
   const shapesRef = useRef([]);
+  const mouseRef = useRef({ x: null, y: null });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -150,6 +151,21 @@ const AnimatedBackground = () => {
     // Update particles
     const updateParticles = () => {
       particlesRef.current.forEach(particle => {
+        // Mouse interaction
+        if (mouseRef.current.x !== null && mouseRef.current.y !== null) {
+          const dx = mouseRef.current.x - particle.x;
+          const dy = mouseRef.current.y - particle.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const maxDistance = 150;
+          
+          if (distance < maxDistance) {
+            // Repel particles away from mouse
+            const force = (1 - distance / maxDistance) * 0.5;
+            particle.x -= (dx / distance) * force;
+            particle.y -= (dy / distance) * force;
+          }
+        }
+
         particle.x += particle.speedX;
         particle.y += particle.speedY;
 
@@ -207,6 +223,19 @@ const AnimatedBackground = () => {
       themeRef.current = getCurrentTheme();
     };
 
+    // Handle mouse move
+    const handleMouseMove = (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouseRef.current = {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      };
+    };
+
+    const handleMouseLeave = () => {
+      mouseRef.current = { x: null, y: null };
+    };
+
     // Observe theme changes
     const observer = new MutationObserver(handleThemeChange);
     observer.observe(document.documentElement, {
@@ -215,6 +244,8 @@ const AnimatedBackground = () => {
     });
 
     window.addEventListener('resize', handleResize);
+    canvas.addEventListener('mousemove', handleMouseMove);
+    canvas.addEventListener('mouseleave', handleMouseLeave);
 
     // Cleanup
     return () => {
@@ -222,6 +253,8 @@ const AnimatedBackground = () => {
         cancelAnimationFrame(animationRef.current);
       }
       window.removeEventListener('resize', handleResize);
+      canvas.removeEventListener('mousemove', handleMouseMove);
+      canvas.removeEventListener('mouseleave', handleMouseLeave);
       observer.disconnect();
     };
   }, []);
@@ -236,7 +269,7 @@ const AnimatedBackground = () => {
         width: '100%',
         height: '100%',
         zIndex: 0,
-        pointerEvents: 'none'
+        pointerEvents: 'auto'
       }}
     />
   );

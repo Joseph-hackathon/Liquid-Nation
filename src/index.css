@@ -841,11 +841,11 @@ body {
   border-radius: 16px;
   border: 1px solid var(--border);
   box-shadow: 0 4px 12px rgba(11, 79, 114, 0.08);
-  transition: all 0.3s;
+  transition: transform 0.1s ease-out, box-shadow 0.3s;
+  transform-style: preserve-3d;
 }
 
 .feature-card:hover {
-  transform: translateY(-4px);
   box-shadow: 0 8px 24px rgba(11, 79, 114, 0.15);
 }
 
@@ -892,6 +892,12 @@ body {
   border-radius: 16px;
   border: 1px solid var(--border);
   box-shadow: 0 4px 12px rgba(11, 79, 114, 0.08);
+  transition: transform 0.1s ease-out, box-shadow 0.3s;
+  transform-style: preserve-3d;
+}
+
+.step:hover {
+  box-shadow: 0 8px 24px rgba(11, 79, 114, 0.15);
 }
 
 .step-number {
@@ -946,6 +952,12 @@ body {
   border: 1px solid var(--border);
   text-align: center;
   box-shadow: 0 4px 12px rgba(11, 79, 114, 0.08);
+  transition: transform 0.1s ease-out, box-shadow 0.3s;
+  transform-style: preserve-3d;
+}
+
+.stat-card:hover {
+  box-shadow: 0 8px 24px rgba(11, 79, 114, 0.15);
 }
 
 .stat-card-value {
