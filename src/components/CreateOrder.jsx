@@ -4,7 +4,7 @@ import { useWallet } from '../context/WalletContext';
 import { useEVMWallet } from '../context/EVMWalletContext';
 
 function CreateOrder({ chainThemes, onNavigate }) {
-  const { createOrder } = useOrders();
+  const { createOrder, loading, error } = useOrders();
   const { address: btcAddress, connected: btcConnected } = useWallet();
   const { address: evmAddress, connected: evmConnected } = useEVMWallet();
   
@@ -15,6 +15,8 @@ function CreateOrder({ chainThemes, onNavigate }) {
   const [acceptedTokens, setAcceptedTokens] = useState([]);
   const [partialFills, setPartialFills] = useState(true);
   const [premium, setPremium] = useState('');
+  const [submitError, setSubmitError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const chains = Object.keys(chainThemes);
   const availableAssets = chains; // Use the same chains/tokens as available assets
@@ -27,35 +29,62 @@ function CreateOrder({ chainThemes, onNavigate }) {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitError(null);
     
-    // Create the order with all the form data including wallet addresses
-    const newOrder = {
-      orderType,
-      asset: `${amount} ${asset}`,
-      chain,
-      accepts: acceptedTokens,
-      partial: partialFills,
-      premium: `${premium}%`,
-      btcWallet: btcAddress,
-      evmWallet: evmAddress,
-    };
-    
-    createOrder(newOrder);
-    
-    // Reset form
-    setOrderType('limit-buy');
-    setAsset('BTC');
-    setAmount('');
-    setChain('ETH');
-    setAcceptedTokens([]);
-    setPartialFills(true);
-    setPremium('');
-    
-    // Navigate back to dashboard to see the newly created order
-    if (onNavigate) {
-      onNavigate('dashboard');
+    // Validate wallet connection
+    if (!btcConnected && !evmConnected) {
+      setSubmitError('Please connect a wallet to create an order');
+      return;
+    }
+
+    // Validate form
+    if (!amount || parseFloat(amount) <= 0) {
+      setSubmitError('Please enter a valid amount');
+      return;
+    }
+
+    if (acceptedTokens.length === 0) {
+      setSubmitError('Please select at least one accepted token');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      
+      // Create the order with all the form data including wallet addresses
+      const newOrder = {
+        orderType,
+        asset: `${amount} ${asset}`,
+        chain,
+        accepts: acceptedTokens,
+        partial: partialFills,
+        premium: `${premium}%`,
+        btcWallet: btcAddress,
+        evmWallet: evmAddress,
+      };
+      
+      await createOrder(newOrder);
+      
+      // Reset form
+      setOrderType('limit-buy');
+      setAsset('BTC');
+      setAmount('');
+      setChain('ETH');
+      setAcceptedTokens([]);
+      setPartialFills(true);
+      setPremium('');
+      
+      // Navigate back to dashboard to see the newly created order
+      if (onNavigate) {
+        onNavigate('dashboard');
+      }
+    } catch (err) {
+      console.error('Failed to create order:', err);
+      setSubmitError(err.message || 'Failed to create order. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -240,9 +269,26 @@ function CreateOrder({ chainThemes, onNavigate }) {
             </label>
           </div>
 
+          {(submitError || error) && (
+            <div className="form-error" style={{ 
+              padding: '12px', 
+              background: '#fee', 
+              border: '1px solid #fcc', 
+              borderRadius: '8px', 
+              color: '#c33',
+              marginBottom: '16px'
+            }}>
+              {submitError || error}
+            </div>
+          )}
+
           <div className="form-actions">
-            <button type="submit" className="btn-submit">
-              Create Order
+            <button 
+              type="submit" 
+              className="btn-submit"
+              disabled={isSubmitting || loading || (!btcConnected && !evmConnected)}
+            >
+              {isSubmitting || loading ? 'Creating...' : 'Create Order'}
             </button>
           </div>
         </form>

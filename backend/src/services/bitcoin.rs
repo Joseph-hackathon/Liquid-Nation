@@ -3,6 +3,9 @@
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
+/// Bitcoin service (alias for RPC client)
+pub type BitcoinService = BitcoinRpcClient;
+
 /// Bitcoin Core RPC client
 pub struct BitcoinRpcClient {
     url: String,
@@ -32,16 +35,21 @@ pub struct BlockchainInfo {
 }
 
 impl BitcoinRpcClient {
-    /// Create a new Bitcoin RPC client
-    pub fn new() -> Result<Self> {
-        let url = std::env::var("BITCOIN_RPC_URL")
-            .unwrap_or_else(|_| "http://127.0.0.1:48332".to_string());
+    /// Create a new Bitcoin RPC client with explicit URL
+    pub fn new(url: &str) -> Self {
         let user = std::env::var("BITCOIN_RPC_USER")
             .unwrap_or_else(|_| "charms".to_string());
         let password = std::env::var("BITCOIN_RPC_PASSWORD")
             .unwrap_or_else(|_| "charms".to_string());
 
-        Ok(Self { url, user, password })
+        Self { url: url.to_string(), user, password }
+    }
+
+    /// Create a new Bitcoin RPC client from environment
+    pub fn from_env() -> Result<Self> {
+        let url = std::env::var("BITCOIN_RPC_URL")
+            .unwrap_or_else(|_| "http://127.0.0.1:48332".to_string());
+        Ok(Self::new(&url))
     }
 
     /// Make an RPC call
@@ -128,7 +136,7 @@ impl BitcoinRpcClient {
 
 impl Default for BitcoinRpcClient {
     fn default() -> Self {
-        Self::new().expect("Failed to create Bitcoin RPC client")
+        Self::from_env().expect("Failed to create Bitcoin RPC client")
     }
 }
 

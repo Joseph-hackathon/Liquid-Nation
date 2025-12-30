@@ -258,6 +258,151 @@ export async function getTransactionStatus(txid) {
 }
 
 // ============================================
+// Escrow Operations
+// ============================================
+
+/**
+ * List all escrows with optional filters
+ * @param {Object} filters - Filter parameters
+ */
+export async function listEscrows(filters = {}) {
+  const params = new URLSearchParams();
+  
+  if (filters.status) params.append('status', filters.status);
+  if (filters.depositor) params.append('depositor', filters.depositor);
+  if (filters.recipient) params.append('recipient', filters.recipient);
+  
+  const query = params.toString();
+  return apiRequest(`/escrows${query ? `?${query}` : ''}`);
+}
+
+/**
+ * Get a specific escrow by ID
+ * @param {string} escrowId - Escrow ID
+ */
+export async function getEscrow(escrowId) {
+  return apiRequest(`/escrows/${escrowId}`);
+}
+
+/**
+ * Create a new escrow
+ * @param {Object} escrowData - Escrow creation data
+ * @param {string} escrowData.depositorPubkey - Depositor's public key
+ * @param {string} escrowData.recipientPubkey - Recipient's public key
+ * @param {string} escrowData.arbiterPubkey - Optional arbiter's public key
+ * @param {string} escrowData.escrowType - 'TwoParty', 'TwoOfTwo', or 'TwoOfThree'
+ * @param {string} escrowData.tokenId - Token to escrow
+ * @param {number} escrowData.amount - Amount to escrow
+ * @param {string} escrowData.releaseHash - Optional hash for conditional release
+ * @param {number} escrowData.expiryHeight - Block height when escrow expires
+ * @param {string} escrowData.orderId - Optional associated order ID
+ */
+export async function createEscrow(escrowData) {
+  return apiRequest('/escrows', {
+    method: 'POST',
+    body: JSON.stringify({
+      depositor_pubkey: escrowData.depositorPubkey,
+      recipient_pubkey: escrowData.recipientPubkey,
+      arbiter_pubkey: escrowData.arbiterPubkey,
+      escrow_type: escrowData.escrowType,
+      token_id: escrowData.tokenId,
+      amount: escrowData.amount,
+      release_hash: escrowData.releaseHash,
+      expiry_height: escrowData.expiryHeight,
+      order_id: escrowData.orderId,
+    }),
+  });
+}
+
+/**
+ * Release escrow to recipient
+ * @param {string} escrowId - Escrow ID
+ * @param {Object} releaseData - Release data
+ * @param {string} releaseData.preimage - Preimage for hash-locked release
+ * @param {string} releaseData.signature - Release signature
+ * @param {string} releaseData.signerPubkey - Signer's public key
+ */
+export async function releaseEscrow(escrowId, releaseData) {
+  return apiRequest(`/escrows/${escrowId}/release`, {
+    method: 'POST',
+    body: JSON.stringify({
+      preimage: releaseData.preimage,
+      signature: releaseData.signature,
+      signer_pubkey: releaseData.signerPubkey,
+    }),
+  });
+}
+
+/**
+ * Refund escrow to depositor
+ * @param {string} escrowId - Escrow ID
+ * @param {Object} refundData - Refund data
+ * @param {string} refundData.reason - Refund reason
+ * @param {string} refundData.signature - Refund signature
+ */
+export async function refundEscrow(escrowId, refundData) {
+  return apiRequest(`/escrows/${escrowId}/refund`, {
+    method: 'POST',
+    body: JSON.stringify({
+      reason: refundData.reason,
+      signature: refundData.signature,
+    }),
+  });
+}
+
+/**
+ * Initiate dispute on escrow
+ * @param {string} escrowId - Escrow ID
+ * @param {Object} disputeData - Dispute data
+ * @param {string} disputeData.reason - Dispute reason
+ * @param {string} disputeData.evidenceHash - Optional evidence hash
+ * @param {string} disputeData.initiatorPubkey - Initiator's public key
+ */
+export async function disputeEscrow(escrowId, disputeData) {
+  return apiRequest(`/escrows/${escrowId}/dispute`, {
+    method: 'POST',
+    body: JSON.stringify({
+      reason: disputeData.reason,
+      evidence_hash: disputeData.evidenceHash,
+      initiator_pubkey: disputeData.initiatorPubkey,
+    }),
+  });
+}
+
+/**
+ * Resolve dispute (arbiter only)
+ * @param {string} escrowId - Escrow ID
+ * @param {Object} resolveData - Resolution data
+ * @param {string} resolveData.winner - 'depositor' or 'recipient'
+ * @param {string} resolveData.arbiterSignature - Arbiter's signature
+ */
+export async function resolveDispute(escrowId, resolveData) {
+  return apiRequest(`/escrows/${escrowId}/resolve`, {
+    method: 'POST',
+    body: JSON.stringify({
+      winner: resolveData.winner,
+      arbiter_signature: resolveData.arbiterSignature,
+    }),
+  });
+}
+
+/**
+ * Get escrows by depositor
+ * @param {string} pubkey - Depositor's public key
+ */
+export async function getEscrowsByDepositor(pubkey) {
+  return apiRequest(`/escrows/by-depositor/${pubkey}`);
+}
+
+/**
+ * Get escrows by recipient
+ * @param {string} pubkey - Recipient's public key
+ */
+export async function getEscrowsByRecipient(pubkey) {
+  return apiRequest(`/escrows/by-recipient/${pubkey}`);
+}
+
+// ============================================
 // Utility Functions
 // ============================================
 
@@ -312,6 +457,17 @@ export default {
   proveSpell,
   broadcastTransactions,
   getTransactionStatus,
+  
+  // Escrows
+  listEscrows,
+  getEscrow,
+  createEscrow,
+  releaseEscrow,
+  refundEscrow,
+  disputeEscrow,
+  resolveDispute,
+  getEscrowsByDepositor,
+  getEscrowsByRecipient,
   
   // Utilities
   formatBtc,

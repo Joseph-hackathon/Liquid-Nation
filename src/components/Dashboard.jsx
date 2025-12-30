@@ -36,12 +36,17 @@ function StatusCell({ percent }) {
 }
 
 function Dashboard({ chainThemes, onNavigate }) {
-  const { orders, deleteOrder, cancelAllOrders } = useOrders();
+  const { orders, deleteOrder, cancelAllOrders, loading } = useOrders();
+  const { address: btcAddress } = useWallet();
+  const { address: evmAddress } = useEVMWallet();
   
   // Filter for user's orders (orders created by the current user)
-  // For demo purposes, we identify user orders by the placeholder name used in OrderContext
-  const currentUserName = '0xAB5....39c81';
-  const userOrders = orders.filter(order => order.name === currentUserName);
+  // Match by wallet address
+  const userOrders = orders.filter(order => {
+    if (!btcAddress && !evmAddress) return false;
+    return (btcAddress && order.btcWallet === btcAddress) || 
+           (evmAddress && order.evmWallet === evmAddress);
+  });
   
   // Pagination state
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -93,22 +98,36 @@ function Dashboard({ chainThemes, onNavigate }) {
     }
   };
 
-  const handleCancelOrder = (orderId) => {
+  const handleCancelOrder = async (orderId) => {
     if (window.confirm('Are you sure you want to cancel this order?')) {
-      deleteOrder(orderId);
-      // If we're on a page that becomes empty after deletion, go back a page
-      if (paginatedOrders.length === 1 && currentPage > 1) {
-        setCurrentPage(currentPage - 1);
+      try {
+        await deleteOrder(orderId);
+        // If we're on a page that becomes empty after deletion, go back a page
+        if (paginatedOrders.length === 1 && currentPage > 1) {
+          setCurrentPage(currentPage - 1);
+        }
+      } catch (err) {
+        console.error('Failed to cancel order:', err);
+        alert('Failed to cancel order. Please try again.');
       }
     }
   };
 
-  const handleCancelAllOrders = () => {
+  const handleCancelAllOrders = async () => {
     if (userOrders.length === 0) return;
     
     if (window.confirm(`Are you sure you want to cancel all ${userOrders.length} order${userOrders.length > 1 ? 's' : ''}?`)) {
-      cancelAllOrders(currentUserName);
-      setCurrentPage(1); // Reset to first page
+      try {
+        // Get unique user identifier from first order
+        const userName = userOrders[0]?.name;
+        if (userName) {
+          await cancelAllOrders(userName);
+          setCurrentPage(1); // Reset to first page
+        }
+      } catch (err) {
+        console.error('Failed to cancel all orders:', err);
+        alert('Failed to cancel orders. Please try again.');
+      }
     }
   };
 
@@ -138,7 +157,11 @@ function Dashboard({ chainThemes, onNavigate }) {
         </div>
       </div>
 
-      {userOrders.length === 0 ? (
+      {loading ? (
+        <div className="empty-state">
+          <p>Loading orders...</p>
+        </div>
+      ) : userOrders.length === 0 ? (
         <div className="empty-state">
           <p>You don't have any open orders yet.</p>
           <p>Click "Create" to get started!</p>

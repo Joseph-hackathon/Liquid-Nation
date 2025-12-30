@@ -1,0 +1,67 @@
+# Dispute Escrow Spell
+# Initiates a dispute on an escrow (requires arbiter)
+#
+# Variables:
+#   - escrow_app_id: Escrow app identity
+#   - escrow_app_vk: Escrow app verification key
+#   - token_id: Token in escrow
+#   - token_vk: Token verification key
+#   - escrow_utxo: UTXO containing the escrow
+#   - addr_escrow: Escrow contract address
+#   - reason: Dispute reason
+#   - evidence_hash: Hash of evidence
+#   - initiator_pubkey: Initiator's public key
+
+version: 8
+
+apps:
+  $ESCROW: n/${escrow_app_id}/${escrow_app_vk}
+  $TOKEN: t/${token_id}/${token_vk}
+
+public_inputs:
+  $ESCROW: "dispute"
+
+private_inputs:
+  $ESCROW:
+    reason: ${reason}
+    evidence_hash: ${evidence_hash}
+    initiator_pubkey: ${initiator_pubkey}
+
+ins:
+  # Active escrow
+  - utxo_id: ${escrow_utxo}
+    charms:
+      $ESCROW:
+        escrow_id: ${escrow_id}
+        depositor_pubkey: ${depositor_pubkey}
+        recipient_pubkey: ${recipient_pubkey}
+        arbiter_pubkey: ${arbiter_pubkey}
+        escrow_type: 2
+        held_app_id: ${token_id}
+        held_amount: ${amount}
+        release_hash: ${release_hash}
+        expiry_height: ${expiry_height}
+        status: 0
+        created_at: ${created_at}
+        order_id: ${order_id}
+      $TOKEN: ${amount}
+
+outs:
+  # Escrow in disputed state
+  - address: ${addr_escrow}
+    charms:
+      $ESCROW:
+        escrow_id: ${escrow_id}
+        depositor_pubkey: ${depositor_pubkey}
+        recipient_pubkey: ${recipient_pubkey}
+        arbiter_pubkey: ${arbiter_pubkey}
+        escrow_type: 2
+        held_app_id: ${token_id}
+        held_amount: ${amount}
+        release_hash: ${release_hash}
+        expiry_height: ${expiry_height}
+        status: 4
+        created_at: ${created_at}
+        order_id: ${order_id}
+      $TOKEN: ${amount}
+

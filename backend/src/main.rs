@@ -3,6 +3,7 @@
 //! This server provides REST API endpoints for:
 //! - Order management (create, list, fill, cancel)
 //! - Wallet operations
+//! - Escrow management
 //! - Charms protocol integration
 
 mod routes;
@@ -16,8 +17,11 @@ use tower_http::cors::{CorsLayer, Any};
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use std::net::SocketAddr;
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
-use routes::{health, orders, wallet, spells};
+use routes::{health, orders, wallet, spells, escrow};
+use services::{BitcoinService, CharmsService};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -32,6 +36,19 @@ async fn main() -> anyhow::Result<()> {
         .init();
 
     tracing::info!("Starting Liquid Nation API Server");
+
+    // Initialize services
+    let bitcoin_rpc = std::env::var("BITCOIN_RPC_URL")
+        .unwrap_or_else(|_| "http://127.0.0.1:48332".to_string());
+    let bitcoin_service = Arc::new(BitcoinService::new(&bitcoin_rpc));
+    let charms_service = Arc::new(CharmsService::new());
+
+    // Initialize escrow state
+    let escrow_state = Arc::new(escrow::EscrowState {
+        charms: charms_service,
+        bitcoin: bitcoin_service,
+        escrows: RwLock::new(Vec::new()),
+    });
 
     // Build application routes
     let app = Router::new()
@@ -52,6 +69,9 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/wallet/balance", get(wallet::get_balance))
         .route("/api/wallet/utxos", get(wallet::get_utxos))
         .route("/api/wallet/address", get(wallet::get_address))
+        
+        // Escrow
+        .nest("/api/escrows", escrow::router(escrow_state))
         
         // Spells (Charms protocol)
         .route("/api/spells/prove", post(spells::prove_spell))

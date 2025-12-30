@@ -106,7 +106,7 @@ function Offers({ chainThemes, onNavigate }) {
            (evmAddress && order.evmWallet === evmAddress);
   };
 
-  const handleDeleteOrder = (orderId) => {
+  const handleDeleteOrder = async (orderId) => {
     // Find the order to check ownership
     const order = orders.find(o => o.orderId === orderId);
     if (!order) return;
@@ -118,7 +118,12 @@ function Offers({ chainThemes, onNavigate }) {
     }
     
     if (window.confirm('Are you sure you want to cancel this order?')) {
-      deleteOrder(orderId);
+      try {
+        await deleteOrder(orderId);
+      } catch (err) {
+        console.error('Failed to cancel order:', err);
+        alert('Failed to cancel order. Please try again.');
+      }
     }
   };
 

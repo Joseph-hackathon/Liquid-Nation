@@ -1,0 +1,54 @@
+# Create Escrow Spell
+# Creates a new escrow holding assets for a P2P swap
+#
+# Variables:
+#   - escrow_app_id: Escrow app identity
+#   - escrow_app_vk: Escrow app verification key
+#   - token_id: Token being escrowed
+#   - token_vk: Token verification key
+#   - in_utxo_0: Funding UTXO (used for escrow identity)
+#   - addr_escrow: Escrow contract address
+#   - depositor_pubkey: Depositor's public key (hex)
+#   - recipient_pubkey: Recipient's public key (hex)
+#   - arbiter_pubkey: Optional arbiter's public key (hex)
+#   - amount: Amount to escrow
+#   - expiry_height: Block height when escrow expires
+#   - release_hash: Hash for conditional release (optional)
+#   - order_id: Associated order ID (optional)
+
+version: 8
+
+apps:
+  $ESCROW: n/${escrow_app_id}/${escrow_app_vk}
+  $TOKEN: t/${token_id}/${token_vk}
+
+public_inputs:
+  $ESCROW: "create"
+
+private_inputs:
+  $ESCROW: "${in_utxo_0}"
+
+ins:
+  - utxo_id: ${in_utxo_0}
+    charms:
+      $TOKEN: ${amount}
+
+outs:
+  # Escrow NFT with locked tokens
+  - address: ${addr_escrow}
+    charms:
+      $ESCROW:
+        escrow_id: ${escrow_id}
+        depositor_pubkey: ${depositor_pubkey}
+        recipient_pubkey: ${recipient_pubkey}
+        arbiter_pubkey: ${arbiter_pubkey}
+        escrow_type: 0
+        held_app_id: ${token_id}
+        held_amount: ${amount}
+        release_hash: ${release_hash}
+        expiry_height: ${expiry_height}
+        status: 0
+        created_at: ${current_height}
+        order_id: ${order_id}
+      $TOKEN: ${amount}
+

@@ -1,0 +1,18 @@
+[package]
+name = "liquid-escrow-app"
+version = "0.1.0"
+edition = "2021"
+description = "Liquid Nation escrow app for secure P2P asset holding"
+
+[dependencies]
+charms-sdk = "0.10.0"
+serde = { version = "1.0", features = ["derive"] }
+sha2 = "0.10"
+
+[[bin]]
+name = "liquid-escrow-app"
+path = "src/main.rs"
+
+[lib]
+path = "src/lib.rs"
+

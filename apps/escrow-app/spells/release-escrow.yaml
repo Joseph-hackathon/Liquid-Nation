@@ -1,0 +1,54 @@
+# Release Escrow Spell
+# Releases escrowed assets to the recipient
+#
+# Variables:
+#   - escrow_app_id: Escrow app identity
+#   - escrow_app_vk: Escrow app verification key
+#   - token_id: Token being released
+#   - token_vk: Token verification key
+#   - escrow_utxo: UTXO containing the escrow
+#   - addr_recipient: Recipient's address
+#   - preimage: Preimage for hash-locked release
+#   - signature: Release signature
+#   - signer_pubkey: Signer's public key
+
+version: 8
+
+apps:
+  $ESCROW: n/${escrow_app_id}/${escrow_app_vk}
+  $TOKEN: t/${token_id}/${token_vk}
+
+public_inputs:
+  $ESCROW: "release"
+
+private_inputs:
+  $ESCROW:
+    preimage: ${preimage}
+    signature: ${signature}
+    signer_pubkey: ${signer_pubkey}
+
+ins:
+  # Escrow with locked tokens
+  - utxo_id: ${escrow_utxo}
+    charms:
+      $ESCROW:
+        escrow_id: ${escrow_id}
+        depositor_pubkey: ${depositor_pubkey}
+        recipient_pubkey: ${recipient_pubkey}
+        arbiter_pubkey: ${arbiter_pubkey}
+        escrow_type: ${escrow_type}
+        held_app_id: ${token_id}
+        held_amount: ${amount}
+        release_hash: ${release_hash}
+        expiry_height: ${expiry_height}
+        status: 0
+        created_at: ${created_at}
+        order_id: ${order_id}
+      $TOKEN: ${amount}
+
+outs:
+  # Tokens go to recipient
+  - address: ${addr_recipient}
+    charms:
+      $TOKEN: ${amount}
+

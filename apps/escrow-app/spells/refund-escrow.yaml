@@ -1,0 +1,52 @@
+# Refund Escrow Spell
+# Refunds escrowed assets to the depositor
+#
+# Variables:
+#   - escrow_app_id: Escrow app identity
+#   - escrow_app_vk: Escrow app verification key
+#   - token_id: Token being refunded
+#   - token_vk: Token verification key
+#   - escrow_utxo: UTXO containing the escrow
+#   - addr_depositor: Depositor's address
+#   - reason: Refund reason
+#   - signature: Refund signature
+
+version: 8
+
+apps:
+  $ESCROW: n/${escrow_app_id}/${escrow_app_vk}
+  $TOKEN: t/${token_id}/${token_vk}
+
+public_inputs:
+  $ESCROW: "refund"
+
+private_inputs:
+  $ESCROW:
+    reason: ${reason}
+    signature: ${signature}
+
+ins:
+  # Escrow with locked tokens
+  - utxo_id: ${escrow_utxo}
+    charms:
+      $ESCROW:
+        escrow_id: ${escrow_id}
+        depositor_pubkey: ${depositor_pubkey}
+        recipient_pubkey: ${recipient_pubkey}
+        arbiter_pubkey: ${arbiter_pubkey}
+        escrow_type: ${escrow_type}
+        held_app_id: ${token_id}
+        held_amount: ${amount}
+        release_hash: ${release_hash}
+        expiry_height: ${expiry_height}
+        status: 0
+        created_at: ${created_at}
+        order_id: ${order_id}
+      $TOKEN: ${amount}
+
+outs:
+  # Tokens return to depositor
+  - address: ${addr_depositor}
+    charms:
+      $TOKEN: ${amount}
+
