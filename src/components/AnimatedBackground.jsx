@@ -165,7 +165,7 @@ const AnimatedBackground = () => {
       const dy = mouseRef.current.y - particle.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
       
-      if (distance < MOUSE_INTERACTION_RADIUS) {
+      if (distance > 0 && distance < MOUSE_INTERACTION_RADIUS) {
         // Repel particles away from mouse with stronger force
         const force = (1 - distance / MOUSE_INTERACTION_RADIUS) * MOUSE_REPULSION_FORCE;
         particle.x -= (dx / distance) * force;
