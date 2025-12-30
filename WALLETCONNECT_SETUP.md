@@ -31,11 +31,19 @@ You need to obtain a WalletConnect Project ID from [WalletConnect Cloud](https:/
 1. Create an account at https://cloud.walletconnect.com/
 2. Create a new project
 3. Copy your Project ID
-4. Update the `projectId` in `src/config/wagmi.js`:
+4. Create a `.env` file in the project root (copy from `.env.example`):
 
-```javascript
-const projectId = 'YOUR_WALLETCONNECT_PROJECT_ID';
+```bash
+cp .env.example .env
 ```
+
+5. Add your Project ID to the `.env` file:
+
+```env
+VITE_WALLETCONNECT_PROJECT_ID=your_actual_project_id_here
+```
+
+**Note**: The `.env` file is gitignored and should never be committed to version control.
 
 ## User Flow
 

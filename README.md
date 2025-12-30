@@ -21,12 +21,19 @@ Liquid Nation is a modern DeFi protocol built with React that enables users to t
 
 - Node.js (v18 or higher)
 - npm or yarn
+- WalletConnect Project ID (get from https://cloud.walletconnect.com/)
 
 ### Installation
 
 ```bash
 # Install dependencies
 npm install
+
+# Copy the example environment file
+cp .env.example .env
+
+# Edit .env and add your WalletConnect Project ID
+# VITE_WALLETCONNECT_PROJECT_ID=your_project_id_here
 ```
 
 ### Development
