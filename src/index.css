@@ -1182,7 +1182,7 @@ body {
   font-size: 15px;
   font-family: inherit;
   color: var(--text-strong);
-  background: #fdfaf4;
+  background: var(--panel);
   transition: border-color 0.2s ease;
 }
 

@@ -4,7 +4,7 @@ import { useOrders } from '../context/OrderContext';
 function CreateOrder({ chainThemes, onNavigate }) {
   const { createOrder } = useOrders();
   const [orderType, setOrderType] = useState('limit-buy');
-  const [asset, setAsset] = useState('');
+  const [asset, setAsset] = useState('BTC');
   const [amount, setAmount] = useState('');
   const [chain, setChain] = useState('ETH');
   const [acceptedTokens, setAcceptedTokens] = useState([]);
@@ -12,6 +12,7 @@ function CreateOrder({ chainThemes, onNavigate }) {
   const [premium, setPremium] = useState('');
 
   const chains = Object.keys(chainThemes);
+  const availableAssets = chains; // Use the same chains/tokens as available assets
 
   const handleTokenToggle = (token) => {
     if (acceptedTokens.includes(token)) {
@@ -38,7 +39,7 @@ function CreateOrder({ chainThemes, onNavigate }) {
     
     // Reset form
     setOrderType('limit-buy');
-    setAsset('');
+    setAsset('BTC');
     setAmount('');
     setChain('ETH');
     setAcceptedTokens([]);
@@ -96,15 +97,19 @@ function CreateOrder({ chainThemes, onNavigate }) {
           <div className="form-grid">
             <div className="form-group">
               <label className="form-label" htmlFor="asset">Asset</label>
-              <input
-                type="text"
+              <select
                 id="asset"
-                className="form-input"
+                className="form-select"
                 value={asset}
                 onChange={(e) => setAsset(e.target.value)}
-                placeholder="e.g., ETH, BTC, USDC"
                 required
-              />
+              >
+                {availableAssets.map(assetName => (
+                  <option key={assetName} value={assetName}>
+                    {chainThemes[assetName].label}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="form-group">
