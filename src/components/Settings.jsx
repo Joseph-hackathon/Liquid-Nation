@@ -2,6 +2,7 @@ import { useState } from 'react';
 import ThemeToggle from './ThemeToggle';
 import { useTheme } from '../context/ThemeContext';
 import { useWallet } from '../context/WalletContext';
+import { useEVMWallet } from '../context/EVMWalletContext';
 
 function Settings() {
   const [username, setUsername] = useState('HunterBeast.eth');
@@ -9,16 +10,12 @@ function Settings() {
   const [notifications, setNotifications] = useState(true);
   const [autoRefresh, setAutoRefresh] = useState(true);
   const { isDarkMode } = useTheme();
-  const { address, connected, disconnect } = useWallet();
+  const { address: btcAddress, connected: btcConnected, disconnect: disconnectBTC } = useWallet();
+  const { address: evmAddress, connected: evmConnected, disconnect: disconnectEVM } = useEVMWallet();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     alert('Settings saved!');
-  };
-
-  const formatAddress = (addr) => {
-    if (!addr) return 'Not Connected';
-    return `${addr.slice(0, 8)}...${addr.slice(-8)}`;
   };
 
   return (
@@ -57,15 +54,35 @@ function Settings() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Wallet Address</label>
-              <div className="wallet-display">{formatAddress(address)}</div>
-              {connected && (
+              <label className="form-label">Bitcoin Wallet Address</label>
+              <div className="wallet-display" style={{ wordBreak: 'break-all', fontFamily: 'monospace', fontSize: '0.9em' }}>
+                {btcConnected ? btcAddress : 'Not Connected'}
+              </div>
+              {btcConnected && (
                 <button 
                   type="button" 
                   className="btn-secondary-small"
-                  onClick={() => disconnect()}
+                  onClick={() => disconnectBTC()}
+                  style={{ marginTop: '8px' }}
                 >
-                  Disconnect
+                  Disconnect Bitcoin Wallet
+                </button>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">EVM Wallet Address</label>
+              <div className="wallet-display" style={{ wordBreak: 'break-all', fontFamily: 'monospace', fontSize: '0.9em' }}>
+                {evmConnected ? evmAddress : 'Not Connected'}
+              </div>
+              {evmConnected && (
+                <button 
+                  type="button" 
+                  className="btn-secondary-small"
+                  onClick={() => disconnectEVM()}
+                  style={{ marginTop: '8px' }}
+                >
+                  Disconnect EVM Wallet
                 </button>
               )}
             </div>
