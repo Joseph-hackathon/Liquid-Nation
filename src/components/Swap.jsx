@@ -121,8 +121,6 @@ function Swap({ chainThemes }) {
     alert(`Swapping ${fromAmount} ${fromToken} for ${toAmount} ${toToken}`);
   };
 
-
-
   return (
     <section className="swap-panel" aria-label="Token Swap">
       <div className="swap-header">
