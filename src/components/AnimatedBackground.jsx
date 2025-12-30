@@ -35,16 +35,16 @@ const AnimatedBackground = () => {
     // Create particles
     const createParticles = () => {
       const particles = [];
-      const particleCount = Math.min(50, Math.floor((width * height) / 15000));
+      const particleCount = Math.min(100, Math.floor((width * height) / 8000));
       
       for (let i = 0; i < particleCount; i++) {
         particles.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          size: Math.random() * 3 + 1,
+          size: Math.random() * 4 + 2,
           speedX: (Math.random() - 0.5) * 0.5,
           speedY: (Math.random() - 0.5) * 0.5,
-          opacity: Math.random() * 0.5 + 0.3
+          opacity: Math.random() * 0.4 + 0.5
         });
       }
       return particles;
@@ -87,7 +87,8 @@ const AnimatedBackground = () => {
       const colors = getColors();
       particlesRef.current.forEach(particle => {
         ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        const displaySize = particle.hoverSize || particle.size;
+        ctx.arc(particle.x, particle.y, displaySize, 0, Math.PI * 2);
         ctx.fillStyle = colors.particle;
         ctx.globalAlpha = particle.opacity;
         ctx.fill();
@@ -107,7 +108,7 @@ const AnimatedBackground = () => {
           const distance = Math.sqrt(dx * dx + dy * dy);
 
           if (distance < maxDistance) {
-            const opacity = (1 - distance / maxDistance) * 0.5;
+            const opacity = (1 - distance / maxDistance) * 0.7;
             ctx.beginPath();
             ctx.moveTo(particlesRef.current[i].x, particlesRef.current[i].y);
             ctx.lineTo(particlesRef.current[j].x, particlesRef.current[j].y);
@@ -156,14 +157,21 @@ const AnimatedBackground = () => {
           const dx = mouseRef.current.x - particle.x;
           const dy = mouseRef.current.y - particle.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
-          const maxDistance = 150;
+          const maxDistance = 200;
           
           if (distance < maxDistance) {
-            // Repel particles away from mouse
-            const force = (1 - distance / maxDistance) * 0.5;
+            // Repel particles away from mouse with stronger force
+            const force = (1 - distance / maxDistance) * 1.5;
             particle.x -= (dx / distance) * force;
             particle.y -= (dy / distance) * force;
+            
+            // Increase size on hover
+            particle.hoverSize = Math.min(particle.size * 2, 12);
+          } else {
+            particle.hoverSize = particle.size;
           }
+        } else {
+          particle.hoverSize = particle.size;
         }
 
         particle.x += particle.speedX;
