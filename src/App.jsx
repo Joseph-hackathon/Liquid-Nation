@@ -12,11 +12,15 @@ import CreateOrder from './components/CreateOrder';
 import Settings from './components/Settings';
 import Swap from './components/Swap';
 import ThemeToggle from './components/ThemeToggle';
+import WalletConnect from './components/WalletConnect';
 import { chainThemes } from './data';
 import { OrderProvider } from './context/OrderContext';
+import { useWallet } from './context/WalletContext';
 
 function MainApp({ onBackToLanding }) {
   const [currentPage, setCurrentPage] = useState('dashboard');
+  const [showWalletModal, setShowWalletModal] = useState(false);
+  const { address, connected } = useWallet();
 
   const handleNavigate = (page) => {
     setCurrentPage(page);
@@ -39,6 +43,11 @@ function MainApp({ onBackToLanding }) {
     }
   };
 
+  const formatAddress = (addr) => {
+    if (!addr) return 'Connect Wallet';
+    return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+  };
+
   return (
     <div className="app-shell">
       <header className="top-bar">
@@ -52,9 +61,19 @@ function MainApp({ onBackToLanding }) {
         </button>
         <div className="top-bar-actions">
           <ThemeToggle className="top-bar-theme-toggle" />
-          <div className="wallet-pill">0x123...</div>
+          <button 
+            className="wallet-pill" 
+            onClick={() => !connected && setShowWalletModal(true)}
+            type="button"
+          >
+            {connected ? formatAddress(address) : 'Connect Wallet'}
+          </button>
         </div>
       </header>
+
+      {showWalletModal && (
+        <WalletConnect onClose={() => setShowWalletModal(false)} />
+      )}
 
       <main className="main-stage">
         {renderPage()}
