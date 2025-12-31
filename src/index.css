@@ -712,6 +712,7 @@ body {
   box-shadow: 0 4px 12px rgba(29, 211, 215, 0.3);
   position: relative;
   overflow: hidden;
+  --ripple-size: 300px;
 }
 
 .btn-primary::before {
@@ -728,8 +729,8 @@ body {
 }
 
 .btn-primary:hover::before {
-  width: 300px;
-  height: 300px;
+  width: var(--ripple-size);
+  height: var(--ripple-size);
 }
 
 .btn-primary:hover {

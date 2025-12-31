@@ -38,14 +38,15 @@ const AnimatedBackground = () => {
       const particleCount = Math.min(60, Math.floor((width * height) / 12000));
       
       for (let i = 0; i < particleCount; i++) {
+        const baseOpacity = Math.random() * 0.4 + 0.5;
         particles.push({
           x: Math.random() * width,
           y: Math.random() * height,
           size: Math.random() * 4 + 2,
           speedX: (Math.random() - 0.5) * 0.5,
           speedY: (Math.random() - 0.5) * 0.5,
-          opacity: Math.random() * 0.4 + 0.5,
-          baseOpacity: Math.random() * 0.4 + 0.5
+          opacity: baseOpacity,
+          baseOpacity: baseOpacity
         });
       }
       return particles;
@@ -154,6 +155,9 @@ const AnimatedBackground = () => {
 
     // Update particles
     const updateParticles = () => {
+      const REPEL_FORCE = 0.8;
+      const BRIGHTNESS_BOOST = 0.5;
+      
       particlesRef.current.forEach(particle => {
         // Mouse interaction
         if (mouseRef.current.x !== null && mouseRef.current.y !== null) {
@@ -164,11 +168,12 @@ const AnimatedBackground = () => {
           
           if (distance < maxDistance) {
             // Repel particles away from mouse and brighten them
-            const force = (1 - distance / maxDistance) * 0.8;
+            const proximity = 1 - distance / maxDistance;
+            const force = proximity * REPEL_FORCE;
             particle.x -= (dx / distance) * force;
             particle.y -= (dy / distance) * force;
             // Increase opacity on hover
-            particle.opacity = Math.min(1, particle.baseOpacity + (1 - distance / maxDistance) * 0.5);
+            particle.opacity = Math.min(1, particle.baseOpacity + proximity * BRIGHTNESS_BOOST);
           } else {
             // Reset to base opacity when not near mouse
             particle.opacity = particle.baseOpacity;
@@ -188,6 +193,9 @@ const AnimatedBackground = () => {
       });
 
       // Update shapes on mouse hover
+      const SHAPE_SCALE_FACTOR = 0.3;
+      const SHAPE_BRIGHTNESS_BOOST = 0.2;
+      
       shapesRef.current.forEach(shape => {
         if (mouseRef.current.x !== null && mouseRef.current.y !== null) {
           const dx = mouseRef.current.x - shape.x;
@@ -198,8 +206,8 @@ const AnimatedBackground = () => {
           if (distance < maxDistance) {
             // Scale up and brighten shapes near mouse
             const proximity = 1 - distance / maxDistance;
-            shape.scale = 1 + proximity * 0.3;
-            shape.opacity = shape.baseOpacity + proximity * 0.2;
+            shape.scale = 1 + proximity * SHAPE_SCALE_FACTOR;
+            shape.opacity = shape.baseOpacity + proximity * SHAPE_BRIGHTNESS_BOOST;
           } else {
             // Reset to base values
             shape.scale = 1;
