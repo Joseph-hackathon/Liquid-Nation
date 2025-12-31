@@ -35,16 +35,17 @@ const AnimatedBackground = () => {
     // Create particles
     const createParticles = () => {
       const particles = [];
-      const particleCount = Math.min(50, Math.floor((width * height) / 15000));
+      const particleCount = Math.min(60, Math.floor((width * height) / 12000));
       
       for (let i = 0; i < particleCount; i++) {
         particles.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          size: Math.random() * 3 + 1,
+          size: Math.random() * 4 + 2,
           speedX: (Math.random() - 0.5) * 0.5,
           speedY: (Math.random() - 0.5) * 0.5,
-          opacity: Math.random() * 0.5 + 0.3
+          opacity: Math.random() * 0.4 + 0.5,
+          baseOpacity: Math.random() * 0.4 + 0.5
         });
       }
       return particles;
@@ -53,16 +54,18 @@ const AnimatedBackground = () => {
     // Create floating geometric shapes
     const createShapes = () => {
       const shapes = [];
-      const shapeCount = 8;
+      const shapeCount = 10;
       
       for (let i = 0; i < shapeCount; i++) {
         shapes.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          size: Math.random() * 60 + 40,
+          size: Math.random() * 80 + 50,
           rotation: Math.random() * Math.PI * 2,
           type: Math.random() > 0.5 ? 'square' : 'triangle',
-          opacity: 0.1
+          opacity: 0.15,
+          baseOpacity: 0.15,
+          scale: 1
         });
       }
       return shapes;
@@ -76,9 +79,9 @@ const AnimatedBackground = () => {
     const getColors = () => {
       const isDark = themeRef.current === 'dark';
       return {
-        particle: isDark ? 'rgba(29, 211, 215, 0.8)' : 'rgba(11, 79, 114, 0.6)',
-        line: isDark ? 'rgba(29, 211, 215, 0.3)' : 'rgba(11, 79, 114, 0.2)',
-        shape: isDark ? 'rgba(29, 211, 215, 0.15)' : 'rgba(11, 79, 114, 0.1)'
+        particle: isDark ? 'rgba(29, 211, 215, 1)' : 'rgba(11, 79, 114, 0.8)',
+        line: isDark ? 'rgba(29, 211, 215, 0.4)' : 'rgba(11, 79, 114, 0.3)',
+        shape: isDark ? 'rgba(29, 211, 215, 0.2)' : 'rgba(11, 79, 114, 0.15)'
       };
     };
 
@@ -128,9 +131,10 @@ const AnimatedBackground = () => {
         ctx.save();
         ctx.translate(shape.x, shape.y);
         ctx.rotate(shape.rotation);
+        ctx.scale(shape.scale, shape.scale);
         ctx.globalAlpha = shape.opacity;
         ctx.strokeStyle = colors.shape;
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 3;
 
         if (shape.type === 'square') {
           ctx.strokeRect(-shape.size / 2, -shape.size / 2, shape.size, shape.size);
@@ -156,14 +160,21 @@ const AnimatedBackground = () => {
           const dx = mouseRef.current.x - particle.x;
           const dy = mouseRef.current.y - particle.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
-          const maxDistance = 150;
+          const maxDistance = 200;
           
           if (distance < maxDistance) {
-            // Repel particles away from mouse
-            const force = (1 - distance / maxDistance) * 0.5;
+            // Repel particles away from mouse and brighten them
+            const force = (1 - distance / maxDistance) * 0.8;
             particle.x -= (dx / distance) * force;
             particle.y -= (dy / distance) * force;
+            // Increase opacity on hover
+            particle.opacity = Math.min(1, particle.baseOpacity + (1 - distance / maxDistance) * 0.5);
+          } else {
+            // Reset to base opacity when not near mouse
+            particle.opacity = particle.baseOpacity;
           }
+        } else {
+          particle.opacity = particle.baseOpacity;
         }
 
         particle.x += particle.speedX;
@@ -174,6 +185,30 @@ const AnimatedBackground = () => {
         if (particle.x > width) particle.x = 0;
         if (particle.y < 0) particle.y = height;
         if (particle.y > height) particle.y = 0;
+      });
+
+      // Update shapes on mouse hover
+      shapesRef.current.forEach(shape => {
+        if (mouseRef.current.x !== null && mouseRef.current.y !== null) {
+          const dx = mouseRef.current.x - shape.x;
+          const dy = mouseRef.current.y - shape.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const maxDistance = 250;
+          
+          if (distance < maxDistance) {
+            // Scale up and brighten shapes near mouse
+            const proximity = 1 - distance / maxDistance;
+            shape.scale = 1 + proximity * 0.3;
+            shape.opacity = shape.baseOpacity + proximity * 0.2;
+          } else {
+            // Reset to base values
+            shape.scale = 1;
+            shape.opacity = shape.baseOpacity;
+          }
+        } else {
+          shape.scale = 1;
+          shape.opacity = shape.baseOpacity;
+        }
       });
     };
 
