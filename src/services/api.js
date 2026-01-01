@@ -163,6 +163,21 @@ export async function cancelOrder(orderId) {
   });
 }
 
+/**
+ * Broadcast a signed order transaction
+ * @param {string} orderId - Order ID
+ * @param {string} signedTxHex - Signed transaction hex
+ */
+export async function broadcastOrder(orderId, signedTxHex) {
+  return apiRequest(`/orders/${orderId}/broadcast`, {
+    method: 'POST',
+    body: JSON.stringify({
+      signed_tx_hex: signedTxHex,
+      order_id: orderId,
+    }),
+  });
+}
+
 // ============================================
 // Wallet Operations
 // ============================================
@@ -446,6 +461,7 @@ export default {
   fillOrder,
   partialFillOrder,
   cancelOrder,
+  broadcastOrder,
   
   // Wallet
   connectWallet,

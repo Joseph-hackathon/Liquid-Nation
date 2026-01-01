@@ -1,0 +1,504 @@
+/* Signing Modal Styles */
+
+.signing-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.signing-modal {
+  background: linear-gradient(180deg, #1a1a2e 0%, #16161e 100%);
+  border: 1px solid rgba(255, 200, 87, 0.2);
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 520px;
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 200, 87, 0.1);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  color: #888;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.modal-close:hover {
+  color: #fff;
+}
+
+.modal-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.modal-header h2 {
+  color: #ffc857;
+  font-size: 24px;
+  margin: 0 0 8px 0;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.modal-subtitle {
+  color: #aaa;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Progress Steps */
+.signing-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 28px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.4;
+  transition: opacity 0.3s;
+}
+
+.step.active {
+  opacity: 1;
+}
+
+.step.completed {
+  opacity: 0.8;
+}
+
+.step-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #2a2a3e;
+  border: 2px solid #444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  color: #888;
+  transition: all 0.3s;
+}
+
+.step.active .step-number {
+  background: linear-gradient(135deg, #ffc857, #e5a638);
+  border-color: #ffc857;
+  color: #000;
+}
+
+.step.completed .step-number {
+  background: #2d5a3d;
+  border-color: #4ade80;
+  color: #4ade80;
+}
+
+.step span {
+  font-size: 12px;
+  color: #888;
+}
+
+.step.active span {
+  color: #fff;
+}
+
+.step-connector {
+  flex: 1;
+  height: 2px;
+  background: #333;
+  max-width: 40px;
+}
+
+/* Error Banner */
+.error-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 77, 77, 0.15);
+  border: 1px solid rgba(255, 77, 77, 0.3);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  color: #ff6b6b;
+  font-size: 14px;
+}
+
+.error-banner button {
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0 4px;
+  font-size: 18px;
+}
+
+/* Step Content */
+.step-content h3 {
+  color: #fff;
+  font-size: 18px;
+  margin: 0 0 16px 0;
+}
+
+/* Transaction Details */
+.tx-details {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.tx-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.tx-info-row:last-child {
+  border-bottom: none;
+}
+
+.tx-info-row .label {
+  color: #888;
+  font-size: 13px;
+}
+
+.tx-info-row .value {
+  color: #fff;
+  font-size: 13px;
+}
+
+.tx-info-row .value.mono {
+  font-family: 'Fira Code', 'JetBrains Mono', monospace;
+}
+
+.tx-info-row .value.truncated {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tx-info-row .value.link {
+  color: #ffc857;
+  text-decoration: none;
+}
+
+.tx-info-row .value.link:hover {
+  text-decoration: underline;
+}
+
+.tx-info-row .value.status-confirmed {
+  color: #4ade80;
+  font-weight: 500;
+}
+
+/* TX Hex Details */
+.tx-hex-details {
+  margin-top: 12px;
+}
+
+.tx-hex-details summary {
+  cursor: pointer;
+  color: #888;
+  font-size: 13px;
+  padding: 8px 0;
+}
+
+.tx-hex-details summary:hover {
+  color: #fff;
+}
+
+.tx-hex {
+  background: #0a0a10;
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 11px;
+  font-family: 'Fira Code', monospace;
+  color: #aaa;
+  word-break: break-all;
+  max-height: 120px;
+  overflow-y: auto;
+  margin-top: 8px;
+}
+
+/* Instructions */
+.instructions {
+  background: rgba(255, 200, 87, 0.05);
+  border: 1px solid rgba(255, 200, 87, 0.15);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.instructions h4 {
+  color: #ffc857;
+  font-size: 14px;
+  margin: 0 0 12px 0;
+}
+
+.instructions ol {
+  margin: 0;
+  padding-left: 20px;
+  color: #bbb;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+/* Modal Actions */
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn-primary {
+  flex: 1;
+  background: linear-gradient(135deg, #ffc857, #e5a638);
+  color: #000;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(255, 200, 87, 0.35);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 14px 24px;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Wallet Not Connected */
+.wallet-not-connected {
+  text-align: center;
+  padding: 20px;
+}
+
+.wallet-not-connected p {
+  color: #888;
+  margin: 0 0 16px 0;
+  font-size: 14px;
+}
+
+/* Manual Sign Section */
+.manual-sign {
+  margin-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 16px;
+}
+
+.manual-sign summary {
+  cursor: pointer;
+  color: #666;
+  font-size: 13px;
+}
+
+.manual-sign summary:hover {
+  color: #888;
+}
+
+.manual-sign-content {
+  margin-top: 12px;
+}
+
+.manual-sign-content p {
+  color: #888;
+  font-size: 13px;
+  margin: 0 0 12px 0;
+}
+
+.manual-sign-content textarea {
+  width: 100%;
+  background: #0a0a10;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 12px;
+  color: #fff;
+  font-family: 'Fira Code', monospace;
+  font-size: 12px;
+  resize: vertical;
+}
+
+.manual-sign-content textarea:focus {
+  outline: none;
+  border-color: #ffc857;
+}
+
+/* Signed Status */
+.signed-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  text-align: center;
+}
+
+.success-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.success-icon.large {
+  width: 64px;
+  height: 64px;
+  font-size: 32px;
+}
+
+.signed-status p {
+  color: #aaa;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Broadcast Warning */
+.broadcast-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: rgba(255, 200, 87, 0.08);
+  border: 1px solid rgba(255, 200, 87, 0.2);
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.broadcast-warning span {
+  font-size: 20px;
+}
+
+.broadcast-warning p {
+  color: #ffc857;
+  font-size: 13px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Success Status */
+.success-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 0;
+  text-align: center;
+}
+
+.success-status p {
+  color: #4ade80;
+  font-size: 16px;
+  margin: 0;
+  font-weight: 500;
+}
+
+.success-message {
+  color: #aaa;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 16px;
+}
+
+/* No TX Message */
+.no-tx {
+  color: #888;
+  text-align: center;
+  padding: 24px;
+  font-style: italic;
+}
+
+/* Scrollbar */
+.signing-modal::-webkit-scrollbar {
+  width: 6px;
+}
+
+.signing-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.signing-modal::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 3px;
+}
+
+.signing-modal::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+

@@ -4,10 +4,11 @@
 //! Enables trustless cross-chain asset swaps without liquidity pools.
 
 use charms_sdk::data::{
-    charm_values, check, sum_token_amount, App, Data, Transaction, UtxoId, B32, NFT, TOKEN,
+    charm_values, check, sum_token_amount, App, Data, Transaction, UtxoId, B32, TOKEN,
 };
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
+use std::str::FromStr;
 
 /// Order status enumeration
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

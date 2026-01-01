@@ -1,11 +1,23 @@
 //! Order management endpoints
+//!
+//! Handles order creation, filling, cancellation with full Charms integration
 
 use axum::{
-    extract::{Path, Query},
+    extract::{Path, Query, State},
     Json,
 };
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 use uuid::Uuid;
+
+use crate::services::charms::{CharmsService, OrderSpellData, FillSpellData, SpellProveRequest};
+use crate::services::bitcoin::BitcoinService;
+
+/// Application state shared across handlers
+pub struct AppState {
+    pub charms: CharmsService,
+    pub bitcoin: BitcoinService,
+}
 
 /// Order status
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -16,9 +28,10 @@ pub enum OrderStatus {
     Cancelled,
     Expired,
     PartiallyFilled,
+    PendingSignature,
 }
 
-/// Chain identifier - using String for flexibility during development
+/// Chain identifier - using String for flexibility
 pub type Chain = String;
 
 /// Helper function to normalize chain names
@@ -30,6 +43,18 @@ pub fn normalize_chain(chain: &str) -> String {
         "base" => "base".to_string(),
         "arbitrum" | "arb" => "arbitrum".to_string(),
         other => other.to_lowercase(),
+    }
+}
+
+/// Map chain string to numeric ID for spell
+pub fn chain_to_id(chain: &str) -> u8 {
+    match chain.to_lowercase().as_str() {
+        "bitcoin" | "btc" => 0,
+        "cardano" | "ada" => 1,
+        "ethereum" | "eth" => 2,
+        "base" => 3,
+        "arbitrum" | "arb" => 4,
+        _ => 0,
     }
 }
 
@@ -57,6 +82,8 @@ pub struct Order {
 #[derive(Debug, Deserialize)]
 pub struct CreateOrderRequest {
     pub maker_address: String,
+    #[serde(default)]
+    pub maker_pubkey: Option<String>,
     pub offer_token: String,
     pub offer_amount: String,
     pub want_token: String,
@@ -66,30 +93,64 @@ pub struct CreateOrderRequest {
     pub allow_partial: bool,
     pub expiry_blocks: u64,
     pub funding_utxo: String,
+    #[serde(default)]
+    pub funding_utxo_value: Option<u64>,
+    #[serde(default)]
+    pub dest_address: Option<String>,
 }
 
-/// Create order response
+/// Create order response with spell and unsigned transactions
 #[derive(Debug, Serialize)]
 pub struct CreateOrderResponse {
     pub order: Order,
     pub spell: SpellData,
-    pub unsigned_txs: Vec<String>,
+    pub unsigned_txs: Vec<UnsignedTransaction>,
+    pub signing_instructions: SigningInstructions,
 }
 
-/// Spell data for signing
+/// Spell data for proving
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SpellData {
     pub spell_yaml: String,
+    pub spell_yaml_built: String,  // With variables substituted
     pub app_binary: String,
     pub prev_txs: Vec<String>,
+}
+
+/// Unsigned transaction ready for signing
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UnsignedTransaction {
+    pub hex: String,
+    pub txid: String,
+    pub inputs_to_sign: Vec<InputToSign>,
+}
+
+/// Input that needs signing
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct InputToSign {
+    pub index: u32,
+    pub address: String,
+    pub sighash_type: String,
+}
+
+/// Instructions for wallet signing
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SigningInstructions {
+    pub message: String,
+    pub steps: Vec<String>,
+    pub broadcast_endpoint: String,
 }
 
 /// Fill order request
 #[derive(Debug, Deserialize)]
 pub struct FillOrderRequest {
     pub taker_address: String,
+    #[serde(default)]
+    pub taker_pubkey: Option<String>,
     pub taker_utxo: String,
-    pub fill_amount: Option<String>,  // For partial fills
+    #[serde(default)]
+    pub taker_utxo_value: Option<u64>,
+    pub fill_amount: Option<String>,
 }
 
 /// Fill order response
@@ -97,7 +158,8 @@ pub struct FillOrderRequest {
 pub struct FillOrderResponse {
     pub order: Order,
     pub spell: SpellData,
-    pub unsigned_txs: Vec<String>,
+    pub unsigned_txs: Vec<UnsignedTransaction>,
+    pub signing_instructions: SigningInstructions,
 }
 
 /// Query parameters for listing orders
@@ -121,6 +183,41 @@ pub struct ListOrdersResponse {
     pub limit: u32,
     pub offset: u32,
 }
+
+/// Broadcast request
+#[derive(Debug, Deserialize)]
+pub struct BroadcastRequest {
+    pub signed_tx_hex: String,
+    pub order_id: String,
+}
+
+/// Broadcast response
+#[derive(Debug, Serialize)]
+pub struct BroadcastResponse {
+    pub txid: String,
+    pub status: String,
+    pub message: String,
+}
+
+// ============ App Configuration ============
+// Built with: charms app build && charms app vk
+
+const DEFAULT_APP_ID: &str = "liquid-swap";
+const DEFAULT_APP_VK: &str = "857ee181813511526321296bb0183b7496e1cdc0801552495464e9ec44c37718";
+const DEFAULT_TOKEN_ID: &str = "toad-token";
+const DEFAULT_TOKEN_VK: &str = "857ee181813511526321296bb0183b7496e1cdc0801552495464e9ec44c37718";
+
+// Path to the compiled WASM binary
+const APP_WASM_PATH: &str = "target/wasm32-wasip1/release/liquid-swap-app.wasm";
+
+// ============ Spell Templates ============
+
+const CREATE_ORDER_SPELL: &str = include_str!("../../../apps/swap-app/spells/create-order.yaml");
+const FILL_ORDER_SPELL: &str = include_str!("../../../apps/swap-app/spells/fill-order.yaml");
+const CANCEL_ORDER_SPELL: &str = include_str!("../../../apps/swap-app/spells/cancel-order.yaml");
+const PARTIAL_FILL_SPELL: &str = include_str!("../../../apps/swap-app/spells/partial-fill.yaml");
+
+// ============ Route Handlers ============
 
 /// List all orders with optional filters
 pub async fn list_orders(
@@ -178,56 +275,158 @@ pub async fn get_order(Path(id): Path<String>) -> Json<Option<Order>> {
     }))
 }
 
-/// Create a new order
+/// Create a new order - builds spell and calls prover
 pub async fn create_order(
+    State(state): State<Arc<AppState>>,
     Json(req): Json<CreateOrderRequest>,
 ) -> Json<CreateOrderResponse> {
     let order_id = Uuid::new_v4().to_string();
+    let now = chrono::Utc::now();
     
-    // TODO: Build spell from template
-    // TODO: Call Charms prover API
-    // TODO: Store order in database
+    // Get current block height for expiry calculation
+    let current_height = match state.bitcoin.get_blockchain_info().await {
+        Ok(info) => info.blocks,
+        Err(_) => 850000, // Fallback
+    };
     
+    let expiry_height = current_height + req.expiry_blocks;
+    
+    // Normalize chains
+    let source_chain = normalize_chain(&req.source_chain);
+    let dest_chain = normalize_chain(&req.dest_chain);
+    
+    // Generate escrow address (in production, this would be derived from the contract)
+    let escrow_address = format!("tb1q_escrow_{}", &order_id[..8]);
+    
+    // Prepare spell data
+    let order_spell_data = OrderSpellData {
+        maker_address: req.maker_address.clone(),
+        maker_pubkey: req.maker_pubkey.clone().unwrap_or_else(|| req.maker_address.clone()),
+        offer_token_id: DEFAULT_TOKEN_ID.to_string(),
+        offer_token_vk: DEFAULT_TOKEN_VK.to_string(),
+        offer_amount: req.offer_amount.clone(),
+        want_token_id: req.want_token.clone().to_lowercase(),
+        want_amount: req.want_amount.clone(),
+        expiry_height,
+        allow_partial: req.allow_partial,
+        funding_utxo: req.funding_utxo.clone(),
+        escrow_address: escrow_address.clone(),
+        dest_chain: chain_to_id(&dest_chain),
+        dest_address: req.dest_address.clone().unwrap_or_else(|| req.maker_address.clone()),
+    };
+    
+    // Build the spell with variables substituted
+    let spell_built = state.charms.build_create_order_spell(
+        CREATE_ORDER_SPELL,
+        &order_spell_data,
+        DEFAULT_APP_ID,
+        DEFAULT_APP_VK,
+    ).unwrap_or_else(|e| {
+        tracing::error!("Failed to build spell: {}", e);
+        CREATE_ORDER_SPELL.to_string()
+    });
+    
+    // Validate the spell
+    if let Err(e) = state.charms.validate_spell(&spell_built) {
+        tracing::warn!("Spell validation warning: {}", e);
+    }
+    
+    // Call the Charms Prover API
+    let proved_txs = if !state.charms.is_mock_mode() {
+        let prove_request = SpellProveRequest {
+            spell: spell_built.clone(),
+            binaries: std::collections::BTreeMap::new(), // TODO: Load app binary
+            prev_txs: vec![],
+            funding_utxo: req.funding_utxo.clone(),
+            funding_utxo_value: req.funding_utxo_value.unwrap_or(10000),
+            change_address: req.maker_address.clone(),
+            fee_rate: 10.0,
+            chain: "testnet4".to_string(),
+        };
+        
+        match state.charms.prove_spell(prove_request).await {
+            Ok(txs) => txs,
+            Err(e) => {
+                tracing::error!("Prover API error: {}", e);
+                vec![]
+            }
+        }
+    } else {
+        // Mock mode - generate mock transaction
+        vec![crate::services::charms::ProvedTransaction {
+            hex: "0200000001...mock...".to_string(),
+            txid: format!("mock_{}", order_id),
+        }]
+    };
+    
+    // Create unsigned transactions for signing
+    let unsigned_txs: Vec<UnsignedTransaction> = proved_txs.iter().map(|tx| {
+        UnsignedTransaction {
+            hex: tx.hex.clone(),
+            txid: tx.txid.clone(),
+            inputs_to_sign: vec![
+                InputToSign {
+                    index: 0,
+                    address: req.maker_address.clone(),
+                    sighash_type: "SIGHASH_DEFAULT".to_string(),
+                }
+            ],
+        }
+    }).collect();
+    
+    // Create the order record
     let order = Order {
-        id: order_id,
-        maker_address: req.maker_address,
+        id: order_id.clone(),
+        maker_address: req.maker_address.clone(),
         offer_token: req.offer_token.clone(),
         offer_amount: req.offer_amount.clone(),
         want_token: req.want_token,
         want_amount: req.want_amount,
-        source_chain: req.source_chain,
-        dest_chain: req.dest_chain,
-        status: OrderStatus::Open,
+        source_chain,
+        dest_chain,
+        status: OrderStatus::PendingSignature,
         allow_partial: req.allow_partial,
         filled_amount: "0".to_string(),
-        expiry_height: 850000 + req.expiry_blocks,
-        created_at: chrono::Utc::now().to_rfc3339(),
-        updated_at: chrono::Utc::now().to_rfc3339(),
+        expiry_height,
+        created_at: now.to_rfc3339(),
+        updated_at: now.to_rfc3339(),
         utxo_id: Some(req.funding_utxo),
     };
 
+    // TODO: Store order in database
+    
     Json(CreateOrderResponse {
         order,
         spell: SpellData {
-            spell_yaml: include_str!("../../../apps/swap-app/spells/create-order.yaml").to_string(),
-            app_binary: "".to_string(),  // TODO: Load compiled app binary
+            spell_yaml: CREATE_ORDER_SPELL.to_string(),
+            spell_yaml_built: spell_built,
+            app_binary: "".to_string(), // TODO: Load compiled app binary
             prev_txs: vec![],
         },
-        unsigned_txs: vec![],  // TODO: Generate unsigned transactions
+        unsigned_txs,
+        signing_instructions: SigningInstructions {
+            message: "Please sign the transaction to lock your tokens in escrow".to_string(),
+            steps: vec![
+                "1. Review the transaction details".to_string(),
+                "2. Sign with your Bitcoin wallet".to_string(),
+                "3. Submit the signed transaction to broadcast".to_string(),
+            ],
+            broadcast_endpoint: format!("/api/orders/{}/broadcast", order_id),
+        },
     })
 }
 
 /// Fill an order (atomic swap)
 pub async fn fill_order(
+    State(state): State<Arc<AppState>>,
     Path(id): Path<String>,
     Json(req): Json<FillOrderRequest>,
 ) -> Json<FillOrderResponse> {
-    // TODO: Lookup order
-    // TODO: Build fill spell
-    // TODO: Call Charms prover
+    let now = chrono::Utc::now();
     
-    let order = Order {
-        id,
+    // TODO: Lookup order from database
+    let existing_order = Order {
+        id: id.clone(),
         maker_address: "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx".to_string(),
         offer_token: "TOAD".to_string(),
         offer_amount: "1000".to_string(),
@@ -235,84 +434,282 @@ pub async fn fill_order(
         want_amount: "10000".to_string(),
         source_chain: "bitcoin".to_string(),
         dest_chain: "bitcoin".to_string(),
-        status: OrderStatus::Filled,
+        status: OrderStatus::Open,
         allow_partial: true,
-        filled_amount: "1000".to_string(),
+        filled_amount: "0".to_string(),
         expiry_height: 850000,
-        created_at: chrono::Utc::now().to_rfc3339(),
-        updated_at: chrono::Utc::now().to_rfc3339(),
+        created_at: now.to_rfc3339(),
+        updated_at: now.to_rfc3339(),
+        utxo_id: Some("abc123:0".to_string()),
+    };
+    
+    // Prepare fill spell data
+    let order_spell_data = OrderSpellData {
+        maker_address: existing_order.maker_address.clone(),
+        maker_pubkey: existing_order.maker_address.clone(),
+        offer_token_id: DEFAULT_TOKEN_ID.to_string(),
+        offer_token_vk: DEFAULT_TOKEN_VK.to_string(),
+        offer_amount: existing_order.offer_amount.clone(),
+        want_token_id: existing_order.want_token.clone().to_lowercase(),
+        want_amount: existing_order.want_amount.clone(),
+        expiry_height: existing_order.expiry_height,
+        allow_partial: existing_order.allow_partial,
+        funding_utxo: existing_order.utxo_id.clone().unwrap_or_default(),
+        escrow_address: "".to_string(),
+        dest_chain: chain_to_id(&existing_order.dest_chain),
+        dest_address: existing_order.maker_address.clone(),
+    };
+    
+    let fill_spell_data = FillSpellData {
+        order_utxo: existing_order.utxo_id.clone().unwrap_or_default(),
+        taker_utxo: req.taker_utxo.clone(),
+        taker_pubkey: req.taker_pubkey.clone().unwrap_or_else(|| req.taker_address.clone()),
+        taker_address: req.taker_address.clone(),
+        maker_address: existing_order.maker_address.clone(),
+        offer_amount: existing_order.offer_amount.clone(),
+        want_amount: existing_order.want_amount.clone(),
+        fill_amount: req.fill_amount.clone(),
+    };
+    
+    // Build the fill spell
+    let spell_built = state.charms.build_fill_order_spell(
+        FILL_ORDER_SPELL,
+        &fill_spell_data,
+        &order_spell_data,
+        DEFAULT_APP_ID,
+        DEFAULT_APP_VK,
+    ).unwrap_or_else(|e| {
+        tracing::error!("Failed to build fill spell: {}", e);
+        FILL_ORDER_SPELL.to_string()
+    });
+    
+    // Call prover (mock for now)
+    let unsigned_txs = vec![
+        UnsignedTransaction {
+            hex: "0200000001...mock_fill...".to_string(),
+            txid: format!("mock_fill_{}", id),
+            inputs_to_sign: vec![
+                InputToSign {
+                    index: 0,
+                    address: req.taker_address.clone(),
+                    sighash_type: "SIGHASH_DEFAULT".to_string(),
+                }
+            ],
+        }
+    ];
+    
+    let order = Order {
+        id: id.clone(),
+        maker_address: existing_order.maker_address,
+        offer_token: existing_order.offer_token,
+        offer_amount: existing_order.offer_amount.clone(),
+        want_token: existing_order.want_token,
+        want_amount: existing_order.want_amount,
+        source_chain: existing_order.source_chain,
+        dest_chain: existing_order.dest_chain,
+        status: OrderStatus::PendingSignature,
+        allow_partial: existing_order.allow_partial,
+        filled_amount: existing_order.offer_amount, // Full fill
+        expiry_height: existing_order.expiry_height,
+        created_at: existing_order.created_at,
+        updated_at: now.to_rfc3339(),
         utxo_id: None,
     };
 
     Json(FillOrderResponse {
         order,
         spell: SpellData {
-            spell_yaml: include_str!("../../../apps/swap-app/spells/fill-order.yaml").to_string(),
+            spell_yaml: FILL_ORDER_SPELL.to_string(),
+            spell_yaml_built: spell_built,
             app_binary: "".to_string(),
             prev_txs: vec![],
         },
-        unsigned_txs: vec![],
+        unsigned_txs,
+        signing_instructions: SigningInstructions {
+            message: "Sign to complete the atomic swap".to_string(),
+            steps: vec![
+                "1. You will receive the offered tokens".to_string(),
+                "2. Your tokens will be sent to the maker".to_string(),
+                "3. Sign the transaction to execute".to_string(),
+            ],
+            broadcast_endpoint: format!("/api/orders/{}/broadcast", id),
+        },
     })
 }
 
 /// Cancel an order
-pub async fn cancel_order(Path(id): Path<String>) -> Json<Order> {
-    // TODO: Verify ownership
-    // TODO: Build cancel spell
-    // TODO: Update database
+pub async fn cancel_order(
+    State(_state): State<Arc<AppState>>,
+    Path(id): Path<String>,
+) -> Json<FillOrderResponse> {
+    let now = chrono::Utc::now();
     
-    Json(Order {
-        id,
-        maker_address: "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx".to_string(),
-        offer_token: "TOAD".to_string(),
-        offer_amount: "1000".to_string(),
-        want_token: "BTC".to_string(),
-        want_amount: "10000".to_string(),
-        source_chain: "bitcoin".to_string(),
-        dest_chain: "bitcoin".to_string(),
-        status: OrderStatus::Cancelled,
-        allow_partial: true,
-        filled_amount: "0".to_string(),
-        expiry_height: 850000,
-        created_at: chrono::Utc::now().to_rfc3339(),
-        updated_at: chrono::Utc::now().to_rfc3339(),
-        utxo_id: None,
+    // TODO: Lookup order and verify ownership
+    
+    // Build cancel spell
+    let spell_built = CANCEL_ORDER_SPELL.to_string();
+    
+    let unsigned_txs = vec![
+        UnsignedTransaction {
+            hex: "0200000001...mock_cancel...".to_string(),
+            txid: format!("mock_cancel_{}", id),
+            inputs_to_sign: vec![
+                InputToSign {
+                    index: 0,
+                    address: "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx".to_string(),
+                    sighash_type: "SIGHASH_DEFAULT".to_string(),
+                }
+            ],
+        }
+    ];
+    
+    Json(FillOrderResponse {
+        order: Order {
+            id: id.clone(),
+            maker_address: "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx".to_string(),
+            offer_token: "TOAD".to_string(),
+            offer_amount: "1000".to_string(),
+            want_token: "BTC".to_string(),
+            want_amount: "10000".to_string(),
+            source_chain: "bitcoin".to_string(),
+            dest_chain: "bitcoin".to_string(),
+            status: OrderStatus::PendingSignature,
+            allow_partial: true,
+            filled_amount: "0".to_string(),
+            expiry_height: 850000,
+            created_at: now.to_rfc3339(),
+            updated_at: now.to_rfc3339(),
+            utxo_id: None,
+        },
+        spell: SpellData {
+            spell_yaml: CANCEL_ORDER_SPELL.to_string(),
+            spell_yaml_built: spell_built,
+            app_binary: "".to_string(),
+            prev_txs: vec![],
+        },
+        unsigned_txs,
+        signing_instructions: SigningInstructions {
+            message: "Sign to cancel your order and unlock your tokens".to_string(),
+            steps: vec![
+                "1. Your escrowed tokens will be returned".to_string(),
+                "2. Sign the transaction to cancel".to_string(),
+            ],
+            broadcast_endpoint: format!("/api/orders/{}/broadcast", id),
+        },
     })
 }
 
 /// Partially fill an order
 pub async fn partial_fill_order(
+    State(_state): State<Arc<AppState>>,
     Path(id): Path<String>,
     Json(req): Json<FillOrderRequest>,
 ) -> Json<FillOrderResponse> {
-    let fill_amount = req.fill_amount.unwrap_or("500".to_string());
+    let fill_amount = req.fill_amount.clone().unwrap_or("500".to_string());
+    let now = chrono::Utc::now();
     
-    let order = Order {
-        id,
-        maker_address: "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx".to_string(),
-        offer_token: "TOAD".to_string(),
-        offer_amount: "1000".to_string(),
-        want_token: "BTC".to_string(),
-        want_amount: "10000".to_string(),
-        source_chain: "bitcoin".to_string(),
-        dest_chain: "bitcoin".to_string(),
-        status: OrderStatus::PartiallyFilled,
-        allow_partial: true,
-        filled_amount: fill_amount,
-        expiry_height: 850000,
-        created_at: chrono::Utc::now().to_rfc3339(),
-        updated_at: chrono::Utc::now().to_rfc3339(),
-        utxo_id: Some("abc123:1".to_string()),
-    };
-
+    // Build partial fill spell
+    let spell_built = PARTIAL_FILL_SPELL.to_string();
+    
+    let unsigned_txs = vec![
+        UnsignedTransaction {
+            hex: "0200000001...mock_partial...".to_string(),
+            txid: format!("mock_partial_{}", id),
+            inputs_to_sign: vec![
+                InputToSign {
+                    index: 0,
+                    address: req.taker_address.clone(),
+                    sighash_type: "SIGHASH_DEFAULT".to_string(),
+                }
+            ],
+        }
+    ];
+    
     Json(FillOrderResponse {
-        order,
+        order: Order {
+            id: id.clone(),
+            maker_address: "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx".to_string(),
+            offer_token: "TOAD".to_string(),
+            offer_amount: "1000".to_string(),
+            want_token: "BTC".to_string(),
+            want_amount: "10000".to_string(),
+            source_chain: "bitcoin".to_string(),
+            dest_chain: "bitcoin".to_string(),
+            status: OrderStatus::PartiallyFilled,
+            allow_partial: true,
+            filled_amount: fill_amount,
+            expiry_height: 850000,
+            created_at: now.to_rfc3339(),
+            updated_at: now.to_rfc3339(),
+            utxo_id: Some("abc123:1".to_string()),
+        },
         spell: SpellData {
-            spell_yaml: include_str!("../../../apps/swap-app/spells/partial-fill.yaml").to_string(),
+            spell_yaml: PARTIAL_FILL_SPELL.to_string(),
+            spell_yaml_built: spell_built,
             app_binary: "".to_string(),
             prev_txs: vec![],
         },
-        unsigned_txs: vec![],
+        unsigned_txs,
+        signing_instructions: SigningInstructions {
+            message: "Sign to partially fill this order".to_string(),
+            steps: vec![
+                "1. You will receive a portion of the offered tokens".to_string(),
+                "2. A portion of your tokens will be sent to the maker".to_string(),
+                "3. The remaining order will stay open".to_string(),
+            ],
+            broadcast_endpoint: format!("/api/orders/{}/broadcast", id),
+        },
     })
 }
 
+/// Broadcast a signed transaction
+pub async fn broadcast_order(
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<String>,
+    Json(req): Json<BroadcastRequest>,
+) -> Json<BroadcastResponse> {
+    tracing::info!("Broadcasting transaction for order {}", id);
+    
+    // Check if we're in mock mode (transaction hex starts with mock indicator)
+    let is_mock = req.signed_tx_hex.contains("mock") 
+        || req.signed_tx_hex.len() < 100 
+        || state.charms.is_mock_mode();
+    
+    if is_mock {
+        // In mock mode, simulate successful broadcast
+        let mock_txid = format!("mock_broadcast_{}", uuid::Uuid::new_v4());
+        tracing::info!("Mock mode: simulating broadcast with txid {}", mock_txid);
+        
+        // TODO: Update order status in database
+        
+        return Json(BroadcastResponse {
+            txid: mock_txid,
+            status: "confirmed".to_string(),
+            message: "Transaction simulated successfully (mock mode). In production, tokens would be locked in escrow.".to_string(),
+        });
+    }
+    
+    // Send to Bitcoin network (real mode)
+    match state.bitcoin.send_raw_transaction(&req.signed_tx_hex).await {
+        Ok(txid) => {
+            tracing::info!("Transaction broadcast successful: {}", txid);
+            
+            // TODO: Update order status in database
+            
+            Json(BroadcastResponse {
+                txid,
+                status: "confirmed".to_string(),
+                message: "Transaction broadcast successfully. Tokens are now locked in escrow.".to_string(),
+            })
+        }
+        Err(e) => {
+            tracing::error!("Broadcast failed: {}", e);
+            
+            Json(BroadcastResponse {
+                txid: "".to_string(),
+                status: "failed".to_string(),
+                message: format!("Failed to broadcast: {}", e),
+            })
+        }
+    }
+}

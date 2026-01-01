@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useOrders } from '../context/OrderContext';
 import { useWallet } from '../context/WalletContext';
 import { useEVMWallet } from '../context/EVMWalletContext';
+import TransactionHistory from './TransactionHistory';
 
 function Avatar({ symbol, color }) {
   return (
@@ -52,6 +53,7 @@ function Dashboard({ chainThemes, onNavigate }) {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showTxHistory, setShowTxHistory] = useState(false);
   const dropdownRef = useRef(null);
 
   // Close dropdown when clicking outside
@@ -275,6 +277,22 @@ function Dashboard({ chainThemes, onNavigate }) {
           </div>
         </>
       )}
+      
+      {/* Transaction History Toggle */}
+      <div className="tx-history-toggle">
+        <button 
+          type="button"
+          className={`btn-tx-history ${showTxHistory ? 'active' : ''}`}
+          onClick={() => setShowTxHistory(!showTxHistory)}
+        >
+          <span className="btn-icon">📜</span>
+          <span>Transaction History</span>
+          <span className="btn-arrow">{showTxHistory ? '▲' : '▼'}</span>
+        </button>
+      </div>
+
+      {/* Transaction History Panel */}
+      {showTxHistory && <TransactionHistory />}
     </section>
   );
 }

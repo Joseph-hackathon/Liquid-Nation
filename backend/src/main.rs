@@ -21,7 +21,8 @@ use std::sync::Arc;
 use tokio::sync::RwLock;
 
 use routes::{health, orders, wallet, spells, escrow};
-use services::{BitcoinService, CharmsService};
+use services::bitcoin::BitcoinService;
+use services::charms::CharmsService;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -40,13 +41,21 @@ async fn main() -> anyhow::Result<()> {
     // Initialize services
     let bitcoin_rpc = std::env::var("BITCOIN_RPC_URL")
         .unwrap_or_else(|_| "http://127.0.0.1:48332".to_string());
-    let bitcoin_service = Arc::new(BitcoinService::new(&bitcoin_rpc));
-    let charms_service = Arc::new(CharmsService::new());
+    let bitcoin_service = BitcoinService::new(&bitcoin_rpc);
+    let charms_service = CharmsService::new();
 
-    // Initialize escrow state
-    let escrow_state = Arc::new(escrow::EscrowState {
+    // Create shared order state
+    let order_state = Arc::new(orders::AppState {
         charms: charms_service,
         bitcoin: bitcoin_service,
+    });
+
+    // Initialize escrow state with cloned services
+    let bitcoin_service_escrow = BitcoinService::new(&bitcoin_rpc);
+    let charms_service_escrow = CharmsService::new();
+    let escrow_state = Arc::new(escrow::EscrowState {
+        charms: Arc::new(charms_service_escrow),
+        bitcoin: Arc::new(bitcoin_service_escrow),
         escrows: RwLock::new(Vec::new()),
     });
 
@@ -56,13 +65,15 @@ async fn main() -> anyhow::Result<()> {
         .route("/health", get(health::health_check))
         .route("/api/health", get(health::health_check))
         
-        // Orders
+        // Orders (with state)
         .route("/api/orders", get(orders::list_orders))
         .route("/api/orders", post(orders::create_order))
         .route("/api/orders/:id", get(orders::get_order))
         .route("/api/orders/:id/fill", post(orders::fill_order))
         .route("/api/orders/:id/cancel", delete(orders::cancel_order))
         .route("/api/orders/:id/partial-fill", post(orders::partial_fill_order))
+        .route("/api/orders/:id/broadcast", post(orders::broadcast_order))
+        .with_state(order_state)
         
         // Wallet
         .route("/api/wallet/connect", post(wallet::connect_wallet))
@@ -101,4 +112,3 @@ async fn main() -> anyhow::Result<()> {
 
     Ok(())
 }
-

@@ -13,8 +13,9 @@ import Settings from './components/Settings';
 import Swap from './components/Swap';
 import ThemeToggle from './components/ThemeToggle';
 import WalletConnect from './components/WalletConnect';
+import SigningModal from './components/SigningModal';
 import { chainThemes } from './data';
-import { OrderProvider } from './context/OrderContext';
+import { OrderProvider, useOrders } from './context/OrderContext';
 import { useWallet } from './context/WalletContext';
 import { useEVMWallet } from './context/EVMWalletContext';
 
@@ -23,6 +24,13 @@ function MainApp({ onBackToLanding }) {
   const [showWalletModal, setShowWalletModal] = useState(false);
   const { address: btcAddress, connected: btcConnected } = useWallet();
   const { address: evmAddress, connected: evmConnected } = useEVMWallet();
+  const { 
+    signingModalOpen, 
+    signingData, 
+    closeSigningModal, 
+    onSigningSuccess, 
+    onSigningError 
+  } = useOrders();
 
   const handleNavigate = (page) => {
     setCurrentPage(page);
@@ -99,6 +107,18 @@ function MainApp({ onBackToLanding }) {
       {showWalletModal && (
         <WalletConnect onClose={() => setShowWalletModal(false)} />
       )}
+
+      {/* Transaction Signing Modal */}
+      <SigningModal
+        isOpen={signingModalOpen}
+        onClose={closeSigningModal}
+        orderId={signingData.orderId}
+        unsignedTxs={signingData.unsignedTxs}
+        signingInstructions={signingData.signingInstructions}
+        spell={signingData.spell}
+        onSuccess={onSigningSuccess}
+        onError={onSigningError}
+      />
 
       <main className="main-stage">
         {renderPage()}
