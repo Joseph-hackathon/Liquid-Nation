@@ -123,7 +123,6 @@ async fn main() -> anyhow::Result<()> {
 
     Ok(())
 }
-<<<<<<< HEAD
 
 /// Validate environment configuration on startup
 async fn validate_environment() {
@@ -185,5 +184,3 @@ async fn validate_environment() {
     tracing::info!("=== Validation Complete ===");
 }
 
-=======
->>>>>>> ae981d014cabb1b958c59a98c0ddb8ef8cccf4d3
