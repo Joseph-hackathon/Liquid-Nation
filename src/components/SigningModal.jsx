@@ -39,12 +39,17 @@ const SigningModal = ({
   // Reset state when modal opens
   useEffect(() => {
     if (isOpen) {
+      console.log('SigningModal opened with data:', {
+        unsignedTxs,
+        orderId,
+        signingInstructions,
+      });
       setStep(1);
       setSignedTxHex('');
       setError(null);
       setTxResult(null);
     }
-  }, [isOpen]);
+  }, [isOpen, unsignedTxs, orderId, signingInstructions]);
 
   // Log wallet status for debugging
   useEffect(() => {
@@ -229,24 +234,31 @@ const SigningModal = ({
               </div>
             )}
             
-            {unsignedTxs.length > 0 ? (
+            {unsignedTxs && unsignedTxs.length > 0 ? (
               <div className="tx-details">
                 <div className="tx-info-row">
                   <span className="label">Transaction ID:</span>
-                  <span className="value mono">{unsignedTxs[0]?.txid}</span>
+                  <span className="value mono">{unsignedTxs[0]?.txid || 'Pending...'}</span>
                 </div>
                 <div className="tx-info-row">
                   <span className="label">Inputs to sign:</span>
                   <span className="value">{unsignedTxs[0]?.inputs_to_sign?.length || 1}</span>
                 </div>
                 
-                <details className="tx-hex-details">
-                  <summary>View Transaction Hex</summary>
-                  <pre className="tx-hex">{unsignedTxs[0]?.hex}</pre>
-                </details>
+                {unsignedTxs[0]?.hex && (
+                  <details className="tx-hex-details">
+                    <summary>View Transaction Hex</summary>
+                    <pre className="tx-hex">{unsignedTxs[0].hex}</pre>
+                  </details>
+                )}
               </div>
             ) : (
-              <p className="no-tx">No transaction data available</p>
+              <div className="no-tx">
+                <p>No transaction data available</p>
+                <p className="tx-debug" style={{ fontSize: '12px', color: '#888', marginTop: '8px' }}>
+                  Debug: unsignedTxs = {JSON.stringify(unsignedTxs)}
+                </p>
+              </div>
             )}
 
             {/* Instructions */}

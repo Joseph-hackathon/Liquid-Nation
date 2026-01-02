@@ -120,11 +120,23 @@ export const OrderProvider = ({ children }) => {
       // Call backend API
       const response = await api.createOrder(apiOrderData);
 
+      console.log('Create order response:', response);
+      console.log('unsigned_txs from API:', response.unsigned_txs);
+
       // Create local order representation
       const maxId = orders.reduce((max, order) => {
         const id = parseInt(order.orderId?.replace('#', ''), 10);
         return !isNaN(id) && id > max ? id : max;
       }, 0);
+
+      // Ensure unsigned_txs is an array
+      const unsignedTxs = Array.isArray(response.unsigned_txs) 
+        ? response.unsigned_txs 
+        : response.unsigned_txs 
+          ? [response.unsigned_txs] 
+          : [];
+
+      console.log('Processed unsignedTxs:', unsignedTxs);
 
       const newOrder = {
         ...orderData,
@@ -135,6 +147,8 @@ export const OrderProvider = ({ children }) => {
         avatar: '🛡️',
         avatarColor: '#ffe7d9',
         rawStatus: 'pending_signature',
+        txid: unsignedTxs[0]?.txid || null,
+        _apiOrder: response.order,
       };
 
       // Store pending order
@@ -143,7 +157,7 @@ export const OrderProvider = ({ children }) => {
       // Set signing data for the modal
       setSigningData({
         orderId: response.order.id,
-        unsignedTxs: response.unsigned_txs || [],
+        unsignedTxs: unsignedTxs,
         signingInstructions: response.signing_instructions || {},
         spell: response.spell || {},
       });

@@ -3,7 +3,8 @@
 //! Handles spell building, proving, and transaction management
 
 use anyhow::Result;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, Serializer};
+use serde_yaml;
 use std::collections::BTreeMap;
 
 /// Charms prover service
@@ -15,7 +16,8 @@ pub struct CharmsService {
 /// Spell prove request - sent to Charms Prover API
 #[derive(Debug, Serialize)]
 pub struct SpellProveRequest {
-    pub spell: String,
+    #[serde(serialize_with = "serialize_spell")]
+    pub spell: String, // YAML string that will be parsed to JSON object
     pub binaries: BTreeMap<String, Vec<u8>>,
     pub prev_txs: Vec<String>,
     pub funding_utxo: String,
@@ -23,6 +25,19 @@ pub struct SpellProveRequest {
     pub change_address: String,
     pub fee_rate: f64,
     pub chain: String,
+}
+
+/// Custom serializer to convert YAML string to JSON object
+fn serialize_spell<S>(spell_yaml: &str, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    // Parse YAML string to Value
+    let yaml_value: serde_yaml::Value = serde_yaml::from_str(spell_yaml)
+        .map_err(|e| serde::ser::Error::custom(format!("Failed to parse spell YAML: {}", e)))?;
+    
+    // Serialize as JSON object
+    yaml_value.serialize(serializer)
 }
 
 /// Transaction from prove response
