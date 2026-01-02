@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: liquid-nation-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: liquidnation
+      POSTGRES_PASSWORD: liquidnation123
+      POSTGRES_DB: liquid_nation
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U liquidnation -d liquid_nation"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - liquid-nation-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: liquid-nation-backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://liquidnation:liquidnation123@postgres:5432/liquid_nation
+      MOCK_MODE: "false"
+      CHARMS_PROVE_API_URL: https://v8.charms.dev/spells/prove
+      BITCOIN_RPC_URL: http://host.docker.internal:48332
+      PORT: 3001
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - liquid-nation-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  liquid-nation-network:
+    driver: bridge
+

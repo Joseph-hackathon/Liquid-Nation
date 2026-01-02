@@ -1,0 +1,10 @@
+target/
+node_modules/
+*.db
+*.sqlite
+.env
+.env.local
+.git/
+.DS_Store
+*.log
+

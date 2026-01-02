@@ -1,0 +1,46 @@
+# Dockerfile for Liquid Nation Backend
+FROM rust:1.75 as builder
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy Cargo files
+COPY Cargo.toml Cargo.lock ./
+COPY backend/Cargo.toml ./backend/
+COPY apps/swap-app/Cargo.toml ./apps/swap-app/
+COPY apps/escrow-app/Cargo.toml ./apps/escrow-app/
+
+# Copy source code
+COPY backend/src ./backend/src
+COPY apps ./apps
+
+# Build the backend
+WORKDIR /app
+RUN cargo build --release -p liquid-nation-backend
+
+# Runtime stage
+FROM debian:bookworm-slim
+
+WORKDIR /app
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    libssl3 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy binary from builder
+COPY --from=builder /app/target/release/liquid-nation-api /app/liquid-nation-api
+
+# Copy WASM binaries if needed
+COPY --from=builder /app/target/wasm32-wasip1/release/*.wasm /app/
+
+EXPOSE 3001
+
+CMD ["./liquid-nation-api"]
+
