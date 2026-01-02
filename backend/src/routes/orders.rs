@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use uuid::Uuid;
 
+use crate::db::{self, DbPool, OrderRecord};
 use crate::services::charms::{CharmsService, OrderSpellData, FillSpellData, SpellProveRequest};
 use crate::services::bitcoin::BitcoinService;
 
@@ -17,6 +18,7 @@ use crate::services::bitcoin::BitcoinService;
 pub struct AppState {
     pub charms: CharmsService,
     pub bitcoin: BitcoinService,
+    pub db: DbPool,
 }
 
 /// Order status
@@ -221,58 +223,98 @@ const PARTIAL_FILL_SPELL: &str = include_str!("../../../apps/swap-app/spells/par
 
 /// List all orders with optional filters
 pub async fn list_orders(
+    State(state): State<Arc<AppState>>,
     Query(params): Query<ListOrdersQuery>,
 ) -> Json<ListOrdersResponse> {
-    // TODO: Implement database query with filters
-    // For now, return mock data
-    let orders = vec![
-        Order {
-            id: Uuid::new_v4().to_string(),
-            maker_address: "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx".to_string(),
-            offer_token: "TOAD".to_string(),
-            offer_amount: "1000".to_string(),
-            want_token: "BTC".to_string(),
-            want_amount: "10000".to_string(),
-            source_chain: "bitcoin".to_string(),
-            dest_chain: "bitcoin".to_string(),
-            status: OrderStatus::Open,
-            allow_partial: true,
-            filled_amount: "0".to_string(),
-            expiry_height: 850000,
-            created_at: chrono::Utc::now().to_rfc3339(),
-            updated_at: chrono::Utc::now().to_rfc3339(),
-            utxo_id: Some("abc123:0".to_string()),
-        },
-    ];
+    // Fetch orders from database
+    let db_orders = match db::get_all_orders(&state.db).await {
+        Ok(orders) => orders,
+        Err(e) => {
+            tracing::error!("Failed to fetch orders: {}", e);
+            Vec::new()
+        }
+    };
+
+    // Convert database records to API response format
+    let orders: Vec<Order> = db_orders
+        .into_iter()
+        .map(|record| Order {
+            id: record.id,
+            maker_address: record.maker_address,
+            offer_token: record.offer_token,
+            offer_amount: record.offer_amount,
+            want_token: record.want_token,
+            want_amount: record.want_amount,
+            source_chain: record.source_chain,
+            dest_chain: record.dest_chain,
+            status: match record.status.as_str() {
+                "open" => OrderStatus::Open,
+                "filled" => OrderStatus::Filled,
+                "cancelled" => OrderStatus::Cancelled,
+                "expired" => OrderStatus::Expired,
+                "partiallyfilled" => OrderStatus::PartiallyFilled,
+                _ => OrderStatus::PendingSignature,
+            },
+            allow_partial: record.allow_partial,
+            filled_amount: record.filled_amount.unwrap_or_else(|| "0".to_string()),
+            expiry_height: record.expiry_height.unwrap_or(0) as u64,
+            created_at: record.created_at.to_rfc3339(),
+            updated_at: record.updated_at.to_rfc3339(),
+            utxo_id: record.utxo_id,
+        })
+        .collect();
+
+    let total = orders.len() as u64;
+    let limit = params.limit.unwrap_or(20);
+    let offset = params.offset.unwrap_or(0);
 
     Json(ListOrdersResponse {
-        total: orders.len() as u64,
+        total,
         orders,
-        limit: params.limit.unwrap_or(20),
-        offset: params.offset.unwrap_or(0),
+        limit,
+        offset,
     })
 }
 
 /// Get a specific order by ID
-pub async fn get_order(Path(id): Path<String>) -> Json<Option<Order>> {
-    // TODO: Implement database lookup
-    Json(Some(Order {
-        id,
-        maker_address: "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx".to_string(),
-        offer_token: "TOAD".to_string(),
-        offer_amount: "1000".to_string(),
-        want_token: "BTC".to_string(),
-        want_amount: "10000".to_string(),
-        source_chain: "bitcoin".to_string(),
-        dest_chain: "bitcoin".to_string(),
-        status: OrderStatus::Open,
-        allow_partial: true,
-        filled_amount: "0".to_string(),
-        expiry_height: 850000,
-        created_at: chrono::Utc::now().to_rfc3339(),
-        updated_at: chrono::Utc::now().to_rfc3339(),
-        utxo_id: Some("abc123:0".to_string()),
-    }))
+pub async fn get_order(
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<String>,
+) -> Json<Option<Order>> {
+    // Fetch from database
+    match db::get_order_by_id(&state.db, &id).await {
+        Ok(Some(record)) => {
+            Json(Some(Order {
+                id: record.id,
+                maker_address: record.maker_address,
+                offer_token: record.offer_token,
+                offer_amount: record.offer_amount,
+                want_token: record.want_token,
+                want_amount: record.want_amount,
+                source_chain: record.source_chain,
+                dest_chain: record.dest_chain,
+                status: match record.status.as_str() {
+                    "open" => OrderStatus::Open,
+                    "filled" => OrderStatus::Filled,
+                    "cancelled" => OrderStatus::Cancelled,
+                    "expired" => OrderStatus::Expired,
+                    "partiallyfilled" => OrderStatus::PartiallyFilled,
+                    _ => OrderStatus::PendingSignature,
+                },
+                allow_partial: record.allow_partial,
+                filled_amount: record.filled_amount.unwrap_or_else(|| "0".to_string()),
+                expiry_height: record.expiry_height.unwrap_or(0) as u64,
+                created_at: record.created_at.to_rfc3339(),
+                updated_at: record.updated_at.to_rfc3339(),
+                utxo_id: record.utxo_id,
+            }))
+        }
+        Ok(None) => Json(None),
+        Err(e) => {
+            tracing::error!("Failed to fetch order {}: {}", id, e);
+            Json(None)
+        }
+    }
 }
 
 /// Create a new order - builds spell and calls prover
@@ -380,20 +422,44 @@ pub async fn create_order(
         maker_address: req.maker_address.clone(),
         offer_token: req.offer_token.clone(),
         offer_amount: req.offer_amount.clone(),
-        want_token: req.want_token,
-        want_amount: req.want_amount,
-        source_chain,
-        dest_chain,
+        want_token: req.want_token.clone(),
+        want_amount: req.want_amount.clone(),
+        source_chain: source_chain.clone(),
+        dest_chain: dest_chain.clone(),
         status: OrderStatus::PendingSignature,
         allow_partial: req.allow_partial,
         filled_amount: "0".to_string(),
         expiry_height,
         created_at: now.to_rfc3339(),
         updated_at: now.to_rfc3339(),
-        utxo_id: Some(req.funding_utxo),
+        utxo_id: Some(req.funding_utxo.clone()),
     };
 
-    // TODO: Store order in database
+    // Store order in database
+    let db_record = OrderRecord {
+        id: order_id.clone(),
+        maker_address: req.maker_address.clone(),
+        offer_token: req.offer_token.clone(),
+        offer_amount: req.offer_amount.clone(),
+        want_token: req.want_token,
+        want_amount: req.want_amount,
+        source_chain,
+        dest_chain,
+        status: "pendingsignature".to_string(),
+        allow_partial: req.allow_partial,
+        filled_amount: Some("0".to_string()),
+        expiry_height: Some(expiry_height as i64),
+        utxo_id: Some(req.funding_utxo),
+        tx_id: None,
+        created_at: now,
+        updated_at: now,
+    };
+
+    if let Err(e) = db::insert_order(&state.db, &db_record).await {
+        tracing::error!("Failed to insert order into database: {}", e);
+    } else {
+        tracing::info!("Order {} saved to database", order_id);
+    }
     
     Json(CreateOrderResponse {
         order,
@@ -539,12 +605,15 @@ pub async fn fill_order(
 
 /// Cancel an order
 pub async fn cancel_order(
-    State(_state): State<Arc<AppState>>,
+    State(state): State<Arc<AppState>>,
     Path(id): Path<String>,
 ) -> Json<FillOrderResponse> {
     let now = chrono::Utc::now();
     
-    // TODO: Lookup order and verify ownership
+    // Update order status to cancelled in database
+    if let Err(e) = db::update_order_status(&state.db, &id, "cancelled").await {
+        tracing::error!("Failed to update order status: {}", e);
+    }
     
     // Build cancel spell
     let spell_built = CANCEL_ORDER_SPELL.to_string();
@@ -680,7 +749,13 @@ pub async fn broadcast_order(
         let mock_txid = format!("mock_broadcast_{}", uuid::Uuid::new_v4());
         tracing::info!("Mock mode: simulating broadcast with txid {}", mock_txid);
         
-        // TODO: Update order status in database
+        // Update order status in database
+        if let Err(e) = db::update_order_status(&state.db, &id, "open").await {
+            tracing::error!("Failed to update order status: {}", e);
+        }
+        if let Err(e) = db::update_order_tx_id(&state.db, &id, &mock_txid).await {
+            tracing::error!("Failed to update order tx_id: {}", e);
+        }
         
         return Json(BroadcastResponse {
             txid: mock_txid,
@@ -694,7 +769,13 @@ pub async fn broadcast_order(
         Ok(txid) => {
             tracing::info!("Transaction broadcast successful: {}", txid);
             
-            // TODO: Update order status in database
+            // Update order status in database
+            if let Err(e) = db::update_order_status(&state.db, &id, "open").await {
+                tracing::error!("Failed to update order status: {}", e);
+            }
+            if let Err(e) = db::update_order_tx_id(&state.db, &id, &txid).await {
+                tracing::error!("Failed to update order tx_id: {}", e);
+            }
             
             Json(BroadcastResponse {
                 txid,

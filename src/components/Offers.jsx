@@ -183,19 +183,28 @@ function Offers({ chainThemes, onNavigate }) {
               <StatusCell percent={offer.status} />
             </div>
             <div className="table-cell text-strong">{offer.premium}</div>
-            <div className="table-cell">
-              {isUserOrder(offer) ? (
+            <div className="table-cell actions-cell">
+              <div className="action-buttons-group">
+                {isUserOrder(offer) && (
+                  <button
+                    type="button"
+                    className="btn-delete-order"
+                    onClick={() => handleDeleteOrder(offer.orderId)}
+                    aria-label="Cancel order"
+                  >
+                    Cancel
+                  </button>
+                )}
                 <button
                   type="button"
-                  className="btn-delete-order"
-                  onClick={() => handleDeleteOrder(offer.orderId)}
-                  aria-label="Cancel order"
+                  className="btn-fill-order"
+                  onClick={() => onNavigate('fill', offer.orderId)}
+                  aria-label="Fill this order"
+                  title={isUserOrder(offer) ? "View your order details" : "Fill this order"}
                 >
-                  Cancel
+                  {isUserOrder(offer) ? 'View' : 'Fill'}
                 </button>
-              ) : (
-                <span style={{ color: 'var(--text-subtle)', fontSize: '0.9em' }}>—</span>
-              )}
+              </div>
             </div>
           </div>
         ))}

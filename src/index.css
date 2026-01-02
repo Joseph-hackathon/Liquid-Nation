@@ -308,6 +308,35 @@ body {
   transform: scale(1.05);
 }
 
+.btn-fill-order {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-fill-order:hover {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.actions-cell {
+  min-width: 140px;
+}
+
+.action-buttons-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
 .create-order-menu {
   position: absolute;
   top: calc(100% + 8px);

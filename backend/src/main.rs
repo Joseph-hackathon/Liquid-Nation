@@ -6,6 +6,7 @@
 //! - Escrow management
 //! - Charms protocol integration
 
+mod db;
 mod routes;
 mod services;
 
@@ -38,16 +39,21 @@ async fn main() -> anyhow::Result<()> {
 
     tracing::info!("Starting Liquid Nation API Server");
 
+    // Initialize database
+    let db_pool = db::init_db().await?;
+    tracing::info!("Database initialized");
+
     // Initialize services
     let bitcoin_rpc = std::env::var("BITCOIN_RPC_URL")
         .unwrap_or_else(|_| "http://127.0.0.1:48332".to_string());
     let bitcoin_service = BitcoinService::new(&bitcoin_rpc);
     let charms_service = CharmsService::new();
 
-    // Create shared order state
+    // Create shared order state with database
     let order_state = Arc::new(orders::AppState {
         charms: charms_service,
         bitcoin: bitcoin_service,
+        db: db_pool.clone(),
     });
 
     // Initialize escrow state with cloned services

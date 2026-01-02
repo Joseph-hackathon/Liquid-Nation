@@ -9,6 +9,7 @@ import Footer from './components/Footer';
 import Dashboard from './components/Dashboard';
 import Offers from './components/Offers';
 import CreateOrder from './components/CreateOrder';
+import FillOrder from './components/FillOrder';
 import Settings from './components/Settings';
 import Swap from './components/Swap';
 import ThemeToggle from './components/ThemeToggle';
@@ -21,6 +22,7 @@ import { useEVMWallet } from './context/EVMWalletContext';
 
 function MainApp({ onBackToLanding }) {
   const [currentPage, setCurrentPage] = useState('dashboard');
+  const [fillOrderId, setFillOrderId] = useState(null);
   const [showWalletModal, setShowWalletModal] = useState(false);
   const { address: btcAddress, connected: btcConnected } = useWallet();
   const { address: evmAddress, connected: evmConnected } = useEVMWallet();
@@ -32,7 +34,10 @@ function MainApp({ onBackToLanding }) {
     onSigningError 
   } = useOrders();
 
-  const handleNavigate = (page) => {
+  const handleNavigate = (page, orderId = null) => {
+    if (page === 'fill' && orderId) {
+      setFillOrderId(orderId);
+    }
     setCurrentPage(page);
   };
 
@@ -44,6 +49,8 @@ function MainApp({ onBackToLanding }) {
         return <Offers chainThemes={chainThemes} onNavigate={handleNavigate} />;
       case 'create':
         return <CreateOrder chainThemes={chainThemes} onNavigate={handleNavigate} />;
+      case 'fill':
+        return <FillOrder orderId={fillOrderId} chainThemes={chainThemes} onNavigate={handleNavigate} />;
       case 'swap':
         return <Swap chainThemes={chainThemes} />;
       case 'settings':

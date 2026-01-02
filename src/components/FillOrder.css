@@ -1,0 +1,590 @@
+/* FillOrder Component Styles */
+
+.fill-order-container {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Header */
+.fill-order-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.fill-order-header h1 {
+  flex: 1;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary, #fff);
+  margin: 0;
+}
+
+.order-id {
+  font-size: 12px;
+  color: var(--text-subtle, #888);
+  font-family: monospace;
+}
+
+.btn-back {
+  background: transparent;
+  border: 1px solid rgba(255, 200, 87, 0.3);
+  color: var(--accent, #ffc857);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.btn-back:hover {
+  background: rgba(255, 200, 87, 0.1);
+  border-color: rgba(255, 200, 87, 0.5);
+}
+
+/* Status Card */
+.status-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.status-header span:first-child {
+  color: var(--text-subtle, #888);
+  font-size: 14px;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-active {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.status-pending {
+  background: rgba(234, 179, 8, 0.2);
+  color: #eab308;
+}
+
+.status-partial {
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+}
+
+.status-filled {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.status-cancelled,
+.status-unknown {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.status-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.status-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.status-text {
+  font-size: 13px;
+  color: var(--text-subtle, #888);
+  text-align: right;
+}
+
+/* Trade Sections */
+.trade-section {
+  background: linear-gradient(180deg, #1a1a2e 0%, #16161e 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 8px;
+}
+
+.receive-section {
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.send-section {
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.trade-section h3 {
+  font-size: 14px;
+  color: var(--text-subtle, #888);
+  margin: 0 0 8px 0;
+  font-weight: 500;
+}
+
+.trade-from {
+  font-size: 13px;
+  color: var(--text-subtle, #888);
+  margin-bottom: 12px;
+}
+
+.trade-from .address {
+  font-family: monospace;
+  color: var(--accent, #ffc857);
+}
+
+.trade-amount {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.trade-amount .amount {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary, #fff);
+}
+
+.trade-amount .token {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-secondary, #ccc);
+}
+
+.chain-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.chain-dest {
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+}
+
+/* Exchange Arrow */
+.exchange-arrow {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.exchange-arrow span {
+  font-size: 24px;
+  color: var(--accent, #ffc857);
+}
+
+/* Partial Fill Section */
+.partial-fill-section {
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(79, 70, 229, 0.1) 100%);
+  border: 1px solid rgba(147, 51, 234, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 24px 0;
+}
+
+.partial-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.partial-header span:first-child {
+  font-weight: 600;
+  color: #a78bfa;
+}
+
+.fill-percent {
+  font-size: 20px;
+  font-weight: 700;
+  color: #c4b5fd;
+}
+
+.partial-description {
+  font-size: 13px;
+  color: var(--text-subtle, #888);
+  margin-bottom: 16px;
+}
+
+.fill-slider {
+  width: 100%;
+  height: 8px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+}
+
+.fill-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #a78bfa;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(167, 139, 250, 0.4);
+  transition: transform 0.2s;
+}
+
+.fill-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.fill-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #a78bfa;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-subtle, #888);
+  margin-top: 8px;
+}
+
+/* Wallet Status */
+.wallet-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+.wallet-status.connected {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #86efac;
+}
+
+.wallet-status.disconnected {
+  background: rgba(234, 179, 8, 0.1);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  color: #fde047;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.action-buttons button {
+  flex: 1;
+  padding: 16px 24px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.btn-primary,
+.btn-fill {
+  background: linear-gradient(135deg, #ffc857 0%, #f59e0b 100%);
+  color: #000;
+}
+
+.btn-primary:hover,
+.btn-fill:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 200, 87, 0.3);
+}
+
+.btn-approve {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #fff;
+}
+
+.btn-approve:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+}
+
+.btn-disabled {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-subtle, #888);
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-primary, #fff);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Own Order Notice */
+.own-order-notice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  padding: 20px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 12px;
+  width: 100%;
+}
+
+.own-order-notice span {
+  font-size: 32px;
+}
+
+.own-order-notice p {
+  margin: 0;
+  color: var(--text-subtle, #888);
+  font-size: 14px;
+}
+
+/* Error Banner */
+.error-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  color: #fca5a5;
+}
+
+.error-banner button {
+  background: none;
+  border: none;
+  color: #fca5a5;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+/* Loading State */
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: var(--text-subtle, #888);
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(255, 200, 87, 0.2);
+  border-top-color: #ffc857;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Success/Error States */
+.success-state,
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.success-icon,
+.error-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.success-state h2,
+.error-state h2 {
+  font-size: 24px;
+  color: var(--text-primary, #fff);
+  margin-bottom: 12px;
+}
+
+.success-state p,
+.error-state p {
+  color: var(--text-subtle, #888);
+  margin-bottom: 24px;
+}
+
+.tx-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+.tx-link {
+  color: var(--accent, #ffc857);
+  text-decoration: none;
+  font-family: monospace;
+}
+
+.tx-link:hover {
+  text-decoration: underline;
+}
+
+/* Signing Modal (inline) */
+.signing-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.signing-modal {
+  background: linear-gradient(180deg, #1a1a2e 0%, #16161e 100%);
+  border: 1px solid rgba(255, 200, 87, 0.2);
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 480px;
+  width: 90%;
+  position: relative;
+}
+
+.signing-modal h2 {
+  margin: 0 0 20px 0;
+  font-size: 20px;
+}
+
+.signing-modal .modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--text-subtle, #888);
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.signing-modal .tx-details {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.signing-modal .tx-details p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-subtle, #888);
+}
+
+.signing-modal .tx-details code {
+  background: rgba(255, 200, 87, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 12px;
+  color: var(--accent, #ffc857);
+}
+
+.signing-modal details {
+  margin-top: 12px;
+}
+
+.signing-modal summary {
+  cursor: pointer;
+  color: var(--accent, #ffc857);
+  font-size: 13px;
+}
+
+.signing-modal pre {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 11px;
+  color: #888;
+  max-height: 120px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.modal-actions button {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .fill-order-container {
+    padding: 16px;
+  }
+
+  .trade-amount .amount {
+    font-size: 22px;
+  }
+
+  .trade-amount .token {
+    font-size: 16px;
+  }
+}
+

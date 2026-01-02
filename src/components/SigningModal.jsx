@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { useLaserEyes } from '@omnisat/lasereyes-react';
+import { useWallet } from '../context/WalletContext';
 import { broadcastOrder } from '../services/api';
 import './SigningModal.css';
 
@@ -26,7 +26,15 @@ const SigningModal = ({
   const [error, setError] = useState(null);
   const [txResult, setTxResult] = useState(null);
   
-  const { connected, signPsbt, address } = useLaserEyes();
+  const wallet = useWallet();
+  const { connected, signPsbt, address } = wallet || {};
+
+  // Check if this is a mock transaction (contains "mock" in hex or txid)
+  const isMockTransaction = unsignedTxs.length > 0 && (
+    unsignedTxs[0]?.hex?.includes('mock') || 
+    unsignedTxs[0]?.txid?.includes('mock') ||
+    unsignedTxs[0]?.hex?.length < 100
+  );
 
   // Reset state when modal opens
   useEffect(() => {
@@ -38,13 +46,20 @@ const SigningModal = ({
     }
   }, [isOpen]);
 
+  // Log wallet status for debugging
+  useEffect(() => {
+    console.log('SigningModal wallet status:', {
+      connected,
+      hasSignPsbt: typeof signPsbt === 'function',
+      address,
+      walletObject: wallet,
+    });
+  }, [connected, signPsbt, address, wallet]);
+
   // Sign the transaction with wallet
   const handleSign = useCallback(async () => {
-    if (!connected) {
-      setError('Please connect your Bitcoin wallet first');
-      return;
-    }
-
+    console.log('handleSign called:', { connected, hasSignPsbt: !!signPsbt, isMockTransaction });
+    
     if (unsignedTxs.length === 0) {
       setError('No transaction to sign');
       return;
@@ -56,28 +71,59 @@ const SigningModal = ({
     try {
       const unsignedTx = unsignedTxs[0];
       
-      // Try to sign with wallet
-      // Different wallets have different signing methods
-      if (signPsbt) {
-        // LaserEyes PSBT signing
-        const signedPsbt = await signPsbt(unsignedTx.hex, {
-          finalize: true,
-          broadcast: false,
-        });
-        setSignedTxHex(signedPsbt);
-        setStep(2);
+      // Always try wallet signing first if connected
+      if (connected && typeof signPsbt === 'function') {
+        console.log('Attempting wallet signing with signPsbt...');
+        console.log('PSBT hex:', unsignedTx.hex?.substring(0, 50) + '...');
+        try {
+          // LaserEyes PSBT signing - this will open the wallet
+          const signedPsbt = await signPsbt(unsignedTx.hex, {
+            finalize: true,
+            broadcast: false,
+          });
+          console.log('signPsbt returned:', signedPsbt?.substring(0, 50) + '...');
+          setSignedTxHex(signedPsbt);
+          setStep(2);
+          return;
+        } catch (walletErr) {
+          console.warn('Wallet signing failed:', walletErr);
+          // If mock transaction, fall back to simulation
+          if (isMockTransaction) {
+            console.log('Mock transaction - falling back to simulation');
+            setSignedTxHex(`signed_mock_${unsignedTx.txid || 'tx'}`);
+            setStep(2);
+            return;
+          }
+          // Real transaction failed - show error
+          throw walletErr;
+        }
       } else {
-        // Fallback - ask user to sign manually
-        setStep(2);
-        setError('Automatic signing not available. Please sign manually.');
+        console.log('Wallet not ready:', { connected, hasSignPsbt: typeof signPsbt });
       }
+
+      // No wallet connected
+      if (!connected) {
+        // For mock transactions, allow simulation without wallet
+        if (isMockTransaction) {
+          console.log('No wallet - simulating mock signature');
+          setSignedTxHex(`signed_mock_${unsignedTx.txid || 'tx'}`);
+          setStep(2);
+          return;
+        }
+        setError('Please connect your Bitcoin wallet first');
+        return;
+      }
+      
+      // Connected but no signPsbt method
+      setStep(2);
+      setError('Automatic signing not available. Please sign manually.');
     } catch (err) {
       console.error('Signing error:', err);
       setError(`Failed to sign transaction: ${err.message}`);
     } finally {
       setIsLoading(false);
     }
-  }, [connected, signPsbt, unsignedTxs]);
+  }, [connected, signPsbt, unsignedTxs, isMockTransaction]);
 
   // Broadcast the signed transaction
   const handleBroadcast = useCallback(async () => {
@@ -165,6 +211,24 @@ const SigningModal = ({
           <div className="step-content">
             <h3>📋 Transaction Details</h3>
             
+            {/* Wallet Status */}
+            <div className={`wallet-status-banner ${connected ? 'connected' : 'disconnected'}`}>
+              <span>{connected ? '🔗' : '⚠️'}</span>
+              <p>
+                {connected 
+                  ? <>Wallet connected: <code>{address?.slice(0, 8)}...{address?.slice(-6)}</code></>
+                  : <strong>No Bitcoin wallet connected</strong>
+                }
+              </p>
+            </div>
+            
+            {isMockTransaction && (
+              <div className="mock-banner">
+                <span>🧪</span>
+                <p><strong>Mock Mode:</strong> This is a simulated transaction. No real Bitcoin will be sent.</p>
+              </div>
+            )}
+            
             {unsignedTxs.length > 0 ? (
               <div className="tx-details">
                 <div className="tx-info-row">
@@ -205,6 +269,14 @@ const SigningModal = ({
                   disabled={isLoading || unsignedTxs.length === 0}
                 >
                   {isLoading ? '⏳ Signing...' : '✍️ Sign with Wallet'}
+                </button>
+              ) : isMockTransaction ? (
+                <button 
+                  className="btn-primary"
+                  onClick={handleSign}
+                  disabled={isLoading || unsignedTxs.length === 0}
+                >
+                  {isLoading ? '⏳ Simulating...' : '🧪 Simulate Signature (Mock)'}
                 </button>
               ) : (
                 <div className="wallet-not-connected">
