@@ -28,6 +28,10 @@ dist-ssr
 *.sln
 *.sw?
 
+#my personal files 
+exp.md
+PROVER_API_ISSUE_GUIDE.md
+
 # Backup of old static files
 old_static_files/
 
